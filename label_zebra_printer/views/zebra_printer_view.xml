@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_zebra_shipmentlabel">
+        <t t-call="web.external_layout">
+            <main class="page">
+                <t t-foreach="docs" t-as="doc">
+                    <h1>Shipment Label для <t t-esc="doc.name"/></h1>
+                    <p>Дата: <t t-esc="doc.scheduled_date"/></p>
+                    <p>Клиент: <t t-esc="doc.partner_id.name"/></p>
+                </t>
+            </main>
+        </t>
+    </template>
+
+    <record id="report_shipment_label" model="ir.actions.report">
+        <field name="name">Shipment Label</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">label_zebra_printer.report_zebra_shipmentlabel</field>
+        <field name="report_file">label_zebra_printer.report_zebra_shipmentlabel</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

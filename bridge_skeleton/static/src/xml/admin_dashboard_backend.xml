@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<templates id="template" xml:space="preserve">
+  <t t-name="bridge_skeleton.dashboard_header">
+    <div class="container-fluid header bg-headercolor">
+      <div class="row d-flex justify-content-end">
+            <div class="col-2 text-white font-weight-bold lead mt-2">
+                <strong>Choose Instance :-</strong>
+            </div>
+            <div class="col-1 mt-2">
+                <select class="mt-1 w-50 select-instance text-black bg-white" style="margin-left: -5rem;" id="ecomm-instance" t-on-click="onChangeInstance">
+                </select>
+            </div>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <div class='d-flex align-items-center'>
+          <img class="pr-4" id="bridge-icon" src="/bridge_skeleton/static/src/img/banner-icon.png" alt="image" style="width: 10rem; margin-right: 1rem;" />
+          <div class="right-line ">
+            <div class="heading"><span class="text-white h1 heading-customization"><span id="bridge-name"/> ODOO BRIDGE</span>
+                    <t>
+                        <span style="display: none;font-size: small;" id="id-badge-success" class="btn btn-primary class_span btn badge badge-success ml-2 btn4-color rounded-2" method="open_mob_success_connection" t-on-click="_openConnectionForm">Connected</span>
+                    </t>
+                    <t>
+                        <span style="display: none;font-size: small;" id="id-badge-failure" class="btn btn-danger class_span btn badge badge-danger ml-2 btn5-color rounded-2" method="open_mob_error_connection" t-on-click="_openConnectionForm">Disconnected</span>
+                    </t>
+            </div>
+            
+            <strong><p class="text-white mb-1 mt-4 h4">Connect your odoo with <span id="bridge-lowercase1"/> !!!</p></strong>
+            <strong><p class="text-white h4">Start managing your <span id="bridge-lowercase2"/> and odoo sales, accounting and inventory at one place.</p></strong>
+            <div class="d-flex align-items-center mt-4">
+              <a role="button" class="btn btn-primary btn mr-4 btn-gray bulk-sync-btn btn1-color btn-lg rounded-3" t-on-click="_openBulkSync">Bulk Synchronization</a>
+              <a href="#" id="user-guide" class="btn btn-primary btn mr-4 btn-red btn2-color ms-3 btn-lg rounded-3" target="_blank">User Guide</a>
+              <a href="#" id="bridge-extension" class="btn btn-primary btn btn-red btn2-color ms-3 btn-lg rounded-3" target="_blank"><span id="bridge-short-form"/> Extension</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="vertical-line border border-2 m-auto"></div>
+
+        <div class="card-section-header m-auto">
+          <div class="">
+            <div class="line mr-4" />
+            <div>
+              <div class="d-flex align-items-center">
+                <div>
+                  <img src="/bridge_skeleton/static/src/img/quest.png" alt="image" />
+                </div>
+                <div class="ml-2 ms-3">
+                  <strong class="text-white h3">Need Help and View Reviews</strong>
+                </div>
+              </div>
+              <div class="d-flex align-items-center mt-4">
+                <a href="#" id="rate-review" traget="_blank" class="btn btn-primary btn btn-red mr-2 btn2-color btn-lg rounded-3"><span class="fa fa-star pr-2 me-2" />Review Rating</a>
+                <a href="https://webkul.uvdesk.com/en/customer/create-ticket/" target="_blank" class="text-black btn btn-primary btn btn-black btn3-color ms-3 btn-lg rounded-3"><span class="fa fa-phone pr-2 me-2" />Need Assistance</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <t t-name="bridge_skeleton.top_status">
+        <!-- <t t-debug="pdb"/> -->
+    <div class="top-status container-fluid">
+      <div class="row" style="margin: auto;">
+        <div class="col-2 col-md-3 mt-4 p-3 mb-5 bg-body rounded" style="height: 7rem;">
+          <div class="d-flex w-100 item align-items-center shadow" style="height: inherit;">
+            <div class="mr-2" style="margin-left: auto;">
+              <img src="/bridge_skeleton/static/src/img/stat-1.png"  />
+            </div>
+            <div class="range ms-4" style="margin-right: auto;">
+              <p class="mb-2 text-dark h4"><strong>New Customers</strong></p>
+              <t t-set="is_positive" t-data-value="top_status.customer[1] >= 0 ? '+' : ''" />
+              <div class="d-flex align-items-center justify-content-between">
+                <p class="mb-0 text-dark h4"><strong t-esc="top_status.customer[0]" /></p>
+                <t t-if="top_status.customer[1] &lt; 0">
+                  <p style="color: red !important;" t-attf-class="mb-0 small text-dark h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.customer[1] + '%'" />
+                </t>
+                <t t-if="top_status.customer[1] &gt; 0">
+                  <p style="color: #20C197 !important;" t-attf-class="mb-0 small text-dark h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.customer[1] + '%'" />
+                </t>
+                <t t-if="top_status.customer[1] == 0">
+                  <p style="color: black !important;" t-attf-class="mb-0 small text-dark h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.customer[1] + '%'" />
+                </t>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-2 col-md-3 mt-4 p-3 mb-5 bg-body rounded" style="height: 7rem;">
+          <div class="d-flex w-100 item align-items-center shadow" style="height: inherit;">
+            <div class="mr-2" style="margin-left: auto;">
+              <img src="/bridge_skeleton/static/src/img/stat-2.png"  />
+            </div>
+            <div class="range ms-4" style="margin-right: auto;">
+              <p class="mb-2 text-dark h4"><strong>Total Sales</strong></p>
+              <t t-set="is_positive" t-data-value="top_status.sale[1] >= 0 ? '+' : ''" />
+              <div class="d-flex align-items-center justify-content-between">
+                <p class="mb-0 text-dark h4"><strong t-esc="top_status.sale[0]" /></p>
+                <t t-if="top_status.sale[1] &lt; 0">
+                  <p style="color: red !important;" t-attf-class="mb-0 small h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.sale[1] + '%'" />
+                </t>
+                <t t-if="top_status.sale[1] &gt; 0">
+                  <p style="color: #20C197 !important;" t-attf-class="mb-0 small h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.sale[1] + '%'" />
+                </t>
+                <t t-if="top_status.sale[1] == 0">
+                  <p style="color: black !important;" t-attf-class="mb-0 small h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.sale[1] + '%'" />
+                </t>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-2 col-md-3 mt-4 p-3 mb-5 bg-body rounded" style="height: 7rem;">
+          <div class="d-flex w-100 item align-items-center shadow" style="height: inherit;">
+            <div class="mr-2" style="margin-left: auto;">
+              <img src="/bridge_skeleton/static/src/img/stat-3.png"  />
+            </div>
+            <div class="range ms-4" style="margin-right: auto;">
+              <p class="mb-2 text-dark h4"><strong>Total Revenue</strong></p>
+              <t t-set="is_positive" t-data-value="top_status.revenue[1] >= 0 ? '+' : ''" />
+              <div class="d-flex align-items-center justify-content-between">
+                <p class="mb-0 text-dark h4"><strong t-esc="top_status.revenue[0]" /></p>
+                <t t-if="top_status.revenue[1] &lt; 0">
+                  <p style="color: red !important;" t-attf-class="mb-0 small text-dark h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.revenue[1] + '%'" />
+                </t>
+                <t t-if="top_status.revenue[1] &gt; 0">
+                  <p style="color: #20C197 !important;" t-attf-class="mb-0 small text-dark h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.revenue[1] + '%'" />
+                </t>
+                <t t-if="top_status.revenue[1] == 0">
+                  <p style="color: black !important;" t-attf-class="mb-0 small text-dark h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.revenue[1] + '%'" />
+                </t>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-2 col-md-3 mt-4 p-3 mb-5 bg-body rounded" style="height: 7rem;">
+          <div class="d-flex w-100 item align-items-center shadow" style="height: inherit;">
+            <div class="mr-2" style="margin-left: auto;">
+              <img src="/bridge_skeleton/static/src/img/stat-4.png"  />
+            </div>
+            <div class="range ms-4" style="margin-right: auto;">
+              <p class="mb-2 text-dark h4"><strong>Average Sale rate</strong></p>
+              <t t-set="is_positive" t-data-value="top_status.avg_sale[1] >= 0 ? '+' : ''" />
+              <div class="d-flex align-items-center justify-content-between">
+                <p class="mb-0 text-dark h4"><strong t-esc="top_status.avg_sale[0]" /></p>
+                <t t-if="top_status.avg_sale[1] &lt; 0">
+                  <p id="avg-sale" style="color: red !important;" t-attf-class="mb-0 small h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.avg_sale[1] + '%'" />
+                </t>
+                <t t-if="top_status.avg_sale[1] &gt; 0">
+                  <p id="avg-sale" style="color: #20C197 !important;" t-attf-class="mb-0 small h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.avg_sale[1] + '%'" />
+                </t>
+                <t t-if="top_status.avg_sale[1] == 0">
+                  <p id="avg-sale" style="color: black !important;" t-attf-class="mb-0 small h4 #{is_positive=='+' ? '' : 'negative' }" t-esc="is_positive + top_status.avg_sale[1] + '%'" />
+                </t>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </t>
+
+  <t t-name="bridge_skeleton.chart_status">
+    <div class="chart-status container-fluid">
+      <div class="row">
+        <div class="col-5 mt-4">
+          <div class="canvas-container w-100 h-100 bg-white p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex">
+                <h4 id="top5data" class="text-dark mb-0"></h4>
+              </div>
+              <div class="d-flex">
+                <div class="btn-group">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="nmodal" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Bar
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="bar" href="#">Bar</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="pie" href="#">Pie</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="line" href="#">Line</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="doughnut" href="#">Doughnut</a>
+                  </div>
+                </div>
+                <div class="btn-group px-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="modal" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Product
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="product.product" href="#">Product</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="sale.order" href="#">Order</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="res.partner" href="#">Customer</a>
+                  </div>
+                </div>
+                <div class="btn-group ml-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="period" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Today
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="0" href="#">Today</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="7" href="#">This Week</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="30" href="#">Months</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="365" href="#">This Year</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-100">
+              <canvas data-kw_action="dashboard_chart_mix_status" style="height:30rem;"/>
+            </div>
+          </div>
+        </div>
+        <div class="col-7 mt-4">
+          <div class="canvas-container w-100 h-100 bg-white p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex">
+                <h4 class="text-dark mb-0">Total Revenue</h4>
+              </div>
+              <div class="d-flex">
+                <div class="btn-group px-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="modal" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Bar
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="bar" href="#">Bar</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="pie" href="#">Pie</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="line" href="#">Line</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="doughnut" href="#">Doughnut</a>
+                  </div>
+                </div>
+                <div class="btn-group ml-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="period" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Today
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="1" href="#">Today</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="7" href="#">This Week</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="30" href="#">Months</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="365" href="#">This Year</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-100">
+              <canvas data-kw_action="dashboard_chart_revenue" style="height:30rem;"/>
+            </div>
+          </div>
+        </div>
+        <div class="col-5 mt-4">
+          <div class="canvas-container w-100 h-100 bg-white p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex">
+                <h4 class="text-dark mb-0">Total Sale</h4>
+              </div>
+              <div class="d-flex">
+                <div class="btn-group px-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="modal" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Bar
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="bar" href="#">Bar</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="pie" href="#">Pie</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="line" href="#">Line</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="doughnut" href="#">Doughnut</a>
+                  </div>
+                </div>
+                <div class="btn-group ml-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="period" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Today
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="1" href="#">Today</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="7" href="#">This Week</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="30" href="#">Months</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="365" href="#">This Year</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-100">
+              <canvas data-kw_action="dashboard_chart_sale" style="height:30rem;"/>
+            </div>
+          </div>
+        </div>
+        <div class="col-7 mt-4">
+          <div class="canvas-container w-100 h-100 bg-white p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex">
+                <h4 class="text-dark mb-0">Total Orders</h4>
+              </div>
+              <div class="d-flex">
+                <div class="btn-group px-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="modal" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Bar
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="bar" href="#">Bar</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="pie" href="#">Pie</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="line" href="#">Line</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="doughnut" href="#">Doughnut</a>
+                  </div>
+                </div>
+                <div class="btn-group ml-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="period" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Today
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="1" href="#">Today</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="7" href="#">This Week</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="30" href="#">Months</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="365" href="#">This Year</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-100">
+              <canvas data-kw_action="dashboard_chart_total_orders" style="height:30rem;"/>
+            </div>
+          </div>
+        </div>
+        <div class="col-5 mt-4">
+          <div class="canvas-container w-100 h-100 bg-white p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex">
+                <h4 class="text-dark mb-0">Total Product Sale</h4>
+              </div>
+              <div class="d-flex">
+                <div class="btn-group px-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="modal" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Bar
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="bar" href="#">Bar</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="pie" href="#">Pie</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="line" href="#">Line</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="doughnut" href="#">Doughnut</a>
+                  </div>
+                </div>
+                <div class="btn-group ml-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="period" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Today
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="1" href="#">Today</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="7" href="#">This Week</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="30" href="#">Months</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="365" href="#">This Year</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-100">
+              <canvas data-kw_action="dashboard_chart_top_products" style="height:30rem;"/>
+            </div>
+          </div>
+        </div>
+        <div class="col-7 mt-4">
+          <div class="canvas-container w-100 h-100 bg-white p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex">
+                <h4 id="dynamic-data" class="text-dark mb-0"></h4>
+              </div>
+              <div class="d-flex">
+                <div class="btn-group">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="nmodal" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Bar
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="bar" href="#">Bar</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="pie" href="#">Pie</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="line" href="#">Line</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="doughnut" href="#">Doughnut</a>
+                  </div>
+                </div>
+                <div class="btn-group px-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="modal" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Product
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="connector_product_mapping" href="#">Product</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="connector_order_mapping" href="#">Order</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="connector_partner_mapping" href="#">Customer</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="connector_category_mapping" href="#">Category</a>
+                  </div>
+                </div>
+                <div class="btn-group ml-2">
+                  <button class="btn btn-sm dropdown-toggle rounded-2" data-type="period" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #5C7AEA;color: white;">
+                    Today
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="1" href="#">Today</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="7" href="#">This Week</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="30" href="#">Months</a>
+                    <a class="dropdown-item" t-on-click="onChangeFilter" data-value="365" href="#">This Year</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-100">
+              <canvas data-kw_action="dashboard_chart_catalogs" style="height:30rem;"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <div t-name="bridge_skeleton.admin_dashboard" class="bashboard-bridge-skeleton">
+    <t t-call="bridge_skeleton.dashboard_header" />
+    <t t-call="bridge_skeleton.top_status" />
+    <t t-call="bridge_skeleton.chart_status" />
+  </div>
+</templates>

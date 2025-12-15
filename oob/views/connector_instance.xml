@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+
+<odoo>
+    <data>
+        <!-- Connector Instance Configuration -->
+        <record id="connector_instance_form" model="ir.ui.view">
+            <field name="name">connector.instance.form</field>
+            <field name="model">connector.instance</field>
+            <field name="type">form</field>
+            <field name='inherit_id' ref='bridge_skeleton.connector_instance_form' />
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[1]" position='attributes'>
+                    <attribute name="invisible">"ecomm_type == 'opencart'"</attribute>
+                </xpath>
+
+                <xpath expr="//notebook/page[2]" position='before'>
+                    <page string="API Credentials" invisible="ecomm_type != 'opencart'">
+                        <h2
+                            style="margin-top: 10px !important;background-color: #e9ecef;padding-left: 8px;">
+                            API Credentials
+                        </h2>
+                        <div id="api_reference">
+                        </div>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label string="API Url" for="user" />
+                                    <div>
+                                        <field name="user"
+                                            placeholder="Example: http://opencart.com/upload/"
+                                            required="ecomm_type == 'opencart'" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label string=" Session Key" for="session_key" />
+                                    <div>
+                                        <field name="session_key" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-12 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label string=" API Key" for="pwd" />
+                                    <div>
+                                        <field name="pwd"
+                                            placeholder="Example: XMLPCGFTHJKLZFHENHJMLKGKHKHKHKHKHKDSDJJ"
+                                            required="ecomm_type == 'opencart'" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </page>
+                </xpath>
+
+                <xpath expr="//notebook/page[@name='connector_product_setting']" position='inside'>
+                    <div invisible="ecomm_type != 'opencart'">
+                        <h2
+                            style="margin-top: 10px !important;background-color: #e9ecef;padding-left: 8px;">
+                            Opencart Product Configuration
+                        </h2>
+                        <p class="text-muted" style="margin-left:5%">
+                            Default Configuration For Product used by Connector,
+                            when exporting product from Odoo to Opencart.
+                        </p>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label string="Product Export Configuration"
+                                        for="product_configurable" />
+                                    <div class="text-muted">
+                                        Configuration use in Product Expot/Update
+                                    </div>
+                                    <div class="text-muted">
+                                        <b>
+                                            <field name="product_configurable" />
+                                        </b>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+
+<odoo>
+    <record id="message_wizard_form1" model="ir.ui.view">
+        <field name="name">message.wizard</field>
+        <field name="model">message.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Message">
+                <sheet>
+                    <field name="text" nolabel="1" readonly="1" widget="html" />
+                    <newline />
+                    <separator />
+                </sheet>
+                <footer>
+                    <button special="cancel" class="btn-danger" string="Close" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
