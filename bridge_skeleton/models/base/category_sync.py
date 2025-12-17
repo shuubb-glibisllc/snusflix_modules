@@ -7,7 +7,10 @@
 #
 ##########################################################################
 
+import logging
 from odoo import api, models
+
+_logger = logging.getLogger(__name__)
 
 
 class ConnectorSnippet(models.TransientModel):
@@ -78,11 +81,17 @@ class ConnectorSnippet(models.TransientModel):
                     if response.get('status', False):
                         ecomm_id = response.get('ecomm_id', 0)
                         if ecomm_id:
+                            _logger.info("Category '%s' synced successfully → %s ID: %s",
+                                       name, channel.upper(), ecomm_id)
                             self.create_odoo_connector_mapping(
                                 'connector.category.mapping', ecomm_id, odoo_id, instance_id)
                             self.create_ecomm_connector_mapping('connector.category.mapping', channel, {
                                                                 'ecomm_id': ecomm_id, 'odoo_id': odoo_id, 'created_by': 'odoo'}, connection)
                         return ecomm_id
+                    else:
+                        error_msg = response.get('error', 'Unknown error')
+                        _logger.error("Category '%s' (ID: %s) sync failed: %s",
+                                    name, odoo_id, error_msg)
             else:
                 return mapped_category_objs[0].ecomm_id
         return False
@@ -99,11 +108,16 @@ class ConnectorSnippet(models.TransientModel):
                     response = getattr(self, 'update_%s_category' % channel)(
                         {'name': categ_obj.name, 'parent_id': ecomm_cat_parent_id}, ecomm_id, connection)
                     if response.get('status', False):
+                        _logger.info("Category '%s' (ID: %s) updated successfully in %s",
+                                   categ_obj.name, categ_obj.id, channel.upper())
                         updted_category_ids.append(categ_obj.id)
                         updted_category_mapping_ids.append(categ_map_obj.id)
                         self.update_ecomm_connector_mapping('connector.category.mapping', channel, {
                                                             'ecomm_id': ecomm_id, 'name': categ_obj.name, 'created_by': 'odoo'}, connection)
                     else:
+                        error_msg = response.get('error', 'Unknown error')
+                        _logger.error("Category '%s' (ID: %s) update failed: %s",
+                                    categ_obj.name, categ_obj.id, error_msg)
                         not_updted_category_ids.append(categ_obj.id)
             else:
                 not_updted_category_ids.append(categ_obj.id)

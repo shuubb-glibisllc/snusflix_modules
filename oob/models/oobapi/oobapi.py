@@ -85,50 +85,37 @@ class OpencartWebService(object):
 
 
 	def _execute(self, url, method, data=None, files=None, add_headers=None):
-		# """
-		# Execute a request on the Opencart Webservice
-		#
-		# @param url: full url to call
-		# @param method: GET, POST, PUT, DELETE, HEAD
-		# @param data: for PUT (edit) and POST (add) only, the xml sent to Opencart
-		# @param files: should contain {'image': (img_filename, img_file)}
-		# @param add_headers: additional headers merged on the instance's headers
-		# @return: tuple with (status code, header, content) of the response
-		# """
-		# print self.client
-		# print self.client.body
-		# print self.client.content
-		if add_headers is None: add_headers = {}
+		"""
+		Execute a request on the Opencart Webservice
 
-		# Don't print when method = POST, because it contains an encoded URL
-		# The print for POST is in the method add_with_url()
+		@param url: full url to call
+		@param method: GET, POST, PUT, DELETE, HEAD
+		@param data: JSON string for POST/PUT requests
+		@param files: should contain {'image': (img_filename, img_file)}
+		@param add_headers: additional headers merged on the instance's headers
+		@return: response object
+		"""
+		if add_headers is None:
+			add_headers = {}
+
 		if self.debug and data and method != 'POST':
-			try:
-				xml = parseString(data)
-				pretty_body = xml.toprettyxml(indent="  ")
-			except:
-				pretty_body = data
-			print ("Execute url: %s / method: %s\nbody: %s" % (url, method, pretty_body))
+			_logger.debug("Execute url: %s / method: %s\nbody: %s", url, method, data)
 
 		request_headers = self.headers.copy()
 		request_headers.update(add_headers)
-		if not files:
-			r = self.client.request(method, unicode_encode.encode(url), data=data, headers=request_headers)
-		else:
-			r = self.client.request(method, url, files=files, headers = {'User-agent': 'Opencartapi: Python Opencart Library'})
 
-		# if self.debug: # TODO better debug logs
-			# print ("Response code: %s\nResponse headers:\n%s\n"
-				#    % (r.status_code, r.headers))
-			# if r.headers.get('content-type') and r.headers.get('content-type').startswith('image'):
-				# print ("Response body: Image in binary format\n")
-			# else:
-				# print ("Response body:\n%s\n" % r.content)
-		# self._check_status_code(r.status_code, r.content)
-		print (r.content)
-		print (r.text)
-		_logger.info("=================rrr==================================%r",r.content)
-		# self._check_version(r.headers.get('psws-version'))
+		# Send JSON data if Content-Type is application/json
+		if not files:
+			if request_headers.get('Content-Type') == 'application/json':
+				# data is already a JSON string from json.dumps(), send as-is
+				r = self.client.request(method, unicode_encode.encode(url), data=data, headers=request_headers)
+			else:
+				r = self.client.request(method, unicode_encode.encode(url), data=data, headers=request_headers)
+		else:
+			r = self.client.request(method, url, files=files, headers={'User-agent': 'Opencartapi: Python Opencart Library'})
+
+		_logger.debug("Response code: %s", r.status_code)
+		_logger.debug("Response body: %s", r.text[:500])
 
 		return r
 
@@ -142,28 +129,24 @@ class OpencartWebServiceDict(OpencartWebService):
 
 	def get_session_key(self, api_url, params, debug=False, headers=None):
 		# """
+		# Send API request with JSON payload
 		# """
 		self._api_url = api_url
 		self.debug = debug
 		self.headers = headers
 		if self.headers is None:
 			self.headers = {'User-agent': 'Opencartapi: Python Opencart Library'}
-		headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-		# _logger.info("=================get_session_key==================================%r",api_url)
-		# _logger.info("=================get_session_key==================================%r",params)
-		# _logger.info("=================get_session_key==================================%r",headers)
-		r = self._execute(api_url, 'POST', data=params, add_headers=headers)
-		# self.client = requests.Session()
-		# self.client.auth=(params, '')
-		# client = Session()
-		# print client
-		# req = Request('POST', api_url, data=params, headers={})
-		# prepped = req.prepare()
-		# resp = client.send(prepped,
-		#     verify=False,
-		# )
+		headers = {'Content-Type': 'application/json'}
+		_logger.info("API Request to: %s", api_url)
+		_logger.debug("API Request payload: %s", params)
+		# Convert params to JSON string if it's not already a string
+		# Some callers (product_sync) pass pre-encoded JSON, others pass dicts
+		if isinstance(params, str):
+			json_data = params
+		else:
+			json_data = json.dumps(params)
+		r = self._execute(api_url, 'POST', data=json_data, add_headers=headers)
 		return r
-		# return resp
 
 	def validate_session_key(self, api_url, params, debug=False, headers=None):
 		# """

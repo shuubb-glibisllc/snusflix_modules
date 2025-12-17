@@ -47,10 +47,18 @@ class ConnectorSnippet(models.TransientModel):
         display_message = "<h4 class='text-danger'><i class='fa fa-exclamation-triangle'></i> Error in ecommerce connection kindly check connection</h4>"
         connection = self.env['connector.instance']._create_connection()
         if type(connection) is dict and connection.get('status', 'False'):
+            # Validate OpenCart API client is initialized
+            if not connection.get('opencart'):
+                _logger.error("SYNC FAILED: OpenCart API client not initialized in connection")
+                display_message = "<h4 class='text-danger'><i class='fa fa-exclamation-triangle'></i> Error: OpenCart API client not initialized. Please check instance configuration and restart Odoo.</h4>"
+                return self.env['message.wizard'].genrated_message(display_message)
+
             ctx = dict(self._context or {})
             sync_opr = ctx.get('sync_opr')
             instance_id = ctx.get('instance_id')
             channel = ctx.get('ecomm_channel', False)
+            _logger.info("Starting %s sync operation for %s via instance %s (channel: %s)",
+                        sync_opr, oprmodel, instance_id, channel)
             record_objs = self.env[model].browse(ctx.get('active_ids', [])) if ctx.get(
                 'active_model') == model else self.env[model].search(domain)
             if record_objs:

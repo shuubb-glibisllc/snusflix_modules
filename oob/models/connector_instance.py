@@ -9,10 +9,11 @@ import logging
 import requests
 
 from odoo import api, fields, models
+from odoo.addons.oob.models.oobapi import OpencartWebServiceDict
 
 _logger = logging.getLogger(__name__)
 
-API_PATH = 'index.php?route=api/login'
+API_PATH = 'index.php?route=api/oob/login'
 
 
 class ConnectorInstance(models.Model):
@@ -52,15 +53,15 @@ class ConnectorInstance(models.Model):
 
         url = self.user + API_PATH
         data = {
-            "username": "Default",   # always fixed
-            "key": self.pwd.strip() if self.pwd else ""
+            "api_user": "Default",
+            "api_key": self.pwd.strip() if self.pwd else ""
         }
         headers = {
-            "Content-Type": "application/x-www-form-urlencoded"
+            "Content-Type": "application/json"
         }
 
         try:
-            resp = requests.post(url, data=data, headers=headers, timeout=15)
+            resp = requests.post(url, json=data, headers=headers, timeout=15)
             _logger.debug("OpenCart login URL: %s", url)
             _logger.debug("OpenCart login response: %s", resp.text)
 
@@ -114,17 +115,23 @@ class ConnectorInstance(models.Model):
         session_key = None
         url = None
         product_configurable = "template"
+        opencart = None
 
         if instance_id:
             instance = self.browse(instance_id)
             status = True
-            url = instance.user + API_PATH
+            # URL should be base API path, not the full login endpoint
+            # So sync methods can append specific routes (category, product, etc.)
+            url = instance.user + 'index.php?route=api/oob/'
             session_key = instance.session_key
             product_configurable = instance.product_configurable
+            opencart = OpencartWebServiceDict()
+            _logger.debug("OpenCart API client instantiated for instance %s", instance_id)
 
         return {
             "status": status,
             "url": url,
             "session_key": session_key,
             "product_configurable": product_configurable,
+            "opencart": opencart,
         }

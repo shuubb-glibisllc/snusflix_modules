@@ -36,6 +36,8 @@ class ConnectorSnippet(models.TransientModel):
         variant_data = False
 
         if obj_pro and session_key and opencart and url:
+            _logger.info("Starting OpenCart product export for template: %s (ID: %s)",
+                        obj_pro.name, obj_pro.id)
             try:
                 if obj_pro.attribute_line_ids:
                     product_data = self.get_attribute_data(
@@ -66,11 +68,20 @@ class ConnectorSnippet(models.TransientModel):
                 product_data['name'] = obj_pro.name
                 product_data['keyword'] = obj_pro.name
                 product_data['description'] = obj_pro.description or ' '
+                product_data['meta_keyword'] = obj_pro.name
+                product_data['meta_description'] = obj_pro.description or obj_pro.name
+                product_data['tag'] = obj_pro.name
                 product_data['ean'] = obj_pro.barcode or ' '
                 product_data['price'] = obj_pro.list_price or 0.00
                 product_data['quantity'] = self.env['connector.snippet'].get_quantity(
                     obj_pro.product_variant_ids[0], instance_id)
                 product_data['weight'] = obj_pro.weight or 0.00
+                product_data['length'] = 0
+                product_data['width'] = 0
+                product_data['height'] = 0
+                product_data['status'] = 1
+                product_data['tax_class_id'] = 0
+                product_data['stock_status_id'] = 7
                 product_data['erp_product_id'] = obj_pro.id
                 product_data['product_category'] = list(set(prod_catg))
                 product_data['erp_template_id'] = obj_pro.id
@@ -92,7 +103,11 @@ class ConnectorSnippet(models.TransientModel):
                     url, opencart, obj_pro, product_data, instance_id, is_variants)
                 ecomm_id = pro[1]
                 status = True
+                _logger.info("Product template '%s' exported successfully with OpenCart ID: %s",
+                           obj_pro.name, ecomm_id)
             except Exception as e:
+                _logger.error("Failed to export OpenCart product template '%s' (ID: %s): %s",
+                            obj_pro.name, obj_pro.id, str(e), exc_info=True)
                 error = str(e)
 
         return {
@@ -110,20 +125,42 @@ class ConnectorSnippet(models.TransientModel):
 
         route = 'product'
         pro = 0
-        param = json.dumps(put_product_data)
-        resp = session.get_session_key(url + route, param)
+        product_name = put_product_data.get('name', 'Unknown')
+        variant_count = put_product_data.get('product_variant_count', 0)
 
-        # if not resp or not isinstance(resp, dict):
-        #     _logger.error("Invalid response from OpenCart API.")
-        #     return [0, "Invalid response"]
+        _logger.info("Creating OpenCart product: %s (variants: %s)", product_name, variant_count)
 
-        resp = resp.json()
-        key = str(resp[0])
-        oc_id = resp[1]
-        status = resp[2]
+        try:
+            param = json.dumps(put_product_data)
+            resp = session.get_session_key(url + route, param)
+            _logger.debug("OpenCart product API response (first 500 chars): %s", str(resp.text)[:500])
 
-        if not status:
-            return [0, f"{str(pro_id)} - {key}"]
+            resp = resp.json()
+
+            # Handle variable-length responses
+            # Success: [message, product_data, true] - 3 elements
+            # Error: [error_message, false] - 2 elements
+            if len(resp) >= 3:
+                key = str(resp[0])
+                oc_id = resp[1]
+                status = resp[2]
+                _logger.info("OpenCart product creation response - Status: %s, Data: %s", status, oc_id)
+
+                if not status:
+                    _logger.warning("Product creation failed for '%s': %s", product_name, key)
+                    return [0, f"{str(pro_id)} - {key}"]
+            elif len(resp) >= 2:
+                error_msg = str(resp[0])
+                status = resp[1]
+                if not status:
+                    _logger.error("OpenCart API error for product '%s': %s", product_name, error_msg)
+                    return [0, f"{str(pro_id)} - {error_msg}"]
+            else:
+                _logger.error("Invalid API response format for product '%s': %s", product_name, resp)
+                return [0, f"Invalid API response: {str(resp)}"]
+        except Exception as e:
+            _logger.error("Failed to create OpenCart product '%s': %s", product_name, str(e), exc_info=True)
+            return [0, f"Error: {str(e)}"]
 
         if status:
             pro = oc_id
@@ -303,11 +340,20 @@ class ConnectorSnippet(models.TransientModel):
                 product_data['name'] = obj_pro.name
                 product_data['keyword'] = obj_pro.name
                 product_data['description'] = obj_pro.description or ' '
+                product_data['meta_keyword'] = obj_pro.name
+                product_data['meta_description'] = obj_pro.description or obj_pro.name
+                product_data['tag'] = obj_pro.name
                 product_data['ean'] = obj_pro.barcode or ' '
                 product_data['price'] = obj_pro.list_price or 0.00
                 product_data['quantity'] = self.env['connector.snippet'].get_quantity(
                     obj_pro.product_variant_ids[0], instance_id)
                 product_data['weight'] = obj_pro.weight or 0.00
+                product_data['length'] = 0
+                product_data['width'] = 0
+                product_data['height'] = 0
+                product_data['status'] = 1
+                product_data['tax_class_id'] = 0
+                product_data['stock_status_id'] = 7
                 product_data['erp_product_id'] = obj_pro.id
                 product_data['product_category'] = list(set(prod_catg))
                 product_data['erp_template_id'] = obj_pro.id
@@ -323,9 +369,25 @@ class ConnectorSnippet(models.TransientModel):
                 param = json.dumps(product_data)
                 resp = opencart.get_session_key(url+route, param)
                 resp = resp.json()
-                key = str(resp[0])
-                oc_id = resp[1]
-                status = resp[2]
+
+                # Handle variable-length responses
+                # Success: [message, product_data, true] - 3 elements
+                # Error: [error_message, false] - 2 elements
+                if len(resp) >= 3:
+                    key = str(resp[0])
+                    oc_id = resp[1]
+                    status = resp[2]
+                elif len(resp) >= 2:
+                    error_msg = str(resp[0])
+                    status = resp[1]
+                    if not status:
+                        error = error_msg
+                        _logger.error("OpenCart API error updating product: %s", error_msg)
+                else:
+                    status = False
+                    error = "Invalid API response format"
+                    _logger.error("Invalid API response for product update: %s", resp)
+
                 if not status:
                     status = False
                 if status:
