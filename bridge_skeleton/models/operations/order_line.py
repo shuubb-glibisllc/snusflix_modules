@@ -117,7 +117,16 @@ class WkSkeleton(models.TransientModel):
             
             # Enhanced tax logging
             taxes = order_line_data.get('tax_id', [])
+            product_id = order_line_data.get('product_id')
             _logger.info("Raw taxes received from OpenCart: %s (type: %s)", taxes, type(taxes))
+            _logger.info("Product ID: %s, Order ID: %s", product_id, order_line_data.get('order_id'))
+            
+            # Check if product has taxes configured in Odoo for comparison
+            if product_id:
+                product_obj = self.env['product.product'].browse(product_id)
+                odoo_product_taxes = product_obj.taxes_id.ids
+                _logger.info("Product %s (%s) has taxes configured in Odoo: %s", 
+                           product_obj.name, product_id, odoo_product_taxes)
             
             if taxes:
                 # Validate tax IDs exist in Odoo
@@ -131,7 +140,7 @@ class WkSkeleton(models.TransientModel):
                 _logger.info("Final tax_id format for order line: %s", order_line_data['tax_id'])
             else:
                 order_line_data['tax_id'] = False
-                _logger.info("No taxes provided - setting tax_id to False")
+                _logger.warning("🚨 NO TAXES PROVIDED from OpenCart for product %s - OpenCart tax resolution failed!", product_id)
             
             _logger.info("Final order_line_data before creation: %s", order_line_data)
             order_line_id = self.env['sale.order.line'].create(order_line_data)
