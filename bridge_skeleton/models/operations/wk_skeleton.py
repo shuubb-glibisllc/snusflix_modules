@@ -152,11 +152,20 @@ class WkSkeleton(models.TransientModel):
                                         e-commerce order ID.
         @return: A dictionary with status, order_id, and status_message"""
         ctx = dict(self._context or {})
+        
+        # Enhanced logging for order creation
+        _logger.info("=== ORDER CREATION DEBUG ===")
+        _logger.info("Incoming sale_data: %s", sale_data)
+        _logger.info("Context: %s", ctx)
+        
         # check sale_data for min no of keys presen or not
         order_name, order_id, status, status_message = "", False, True, "Order Successfully Created."
         ecommerce_channel = sale_data.get('ecommerce_channel')
         instance_id = ctx.get('instance_id', 0)
         ecommerce_order_id = sale_data.pop('ecommerce_order_id', 0)
+        
+        _logger.info("Order creation - Channel: %s, Instance: %s, EcommerceOrderID: %s", 
+                    ecommerce_channel, instance_id, ecommerce_order_id)
         config_data = self.get_default_configuration_data(
             ecommerce_channel, instance_id)
         sale_data.update(config_data)

@@ -93,6 +93,11 @@ class WkSkeleton(models.TransientModel):
         status = True
         order_line_id = False
         statusMessage = "Order Line Successfully Created."
+        
+        # Log incoming order line data for debugging
+        _logger.info("=== ORDER LINE CREATION DEBUG ===")
+        _logger.info("Incoming order_line_data: %s", order_line_data)
+        
         try:
             # To FIX:
             # Cannot call Onchange in sale order line
@@ -109,13 +114,35 @@ class WkSkeleton(models.TransientModel):
                 order_line_data.update(
                     name=productObj.description_sale or productObj.name
                 )
+            
+            # Enhanced tax logging
             taxes = order_line_data.get('tax_id', [])
-            order_line_data['tax_id'] = [(6, 0, taxes)] if taxes else False
+            _logger.info("Raw taxes received from OpenCart: %s (type: %s)", taxes, type(taxes))
+            
+            if taxes:
+                # Validate tax IDs exist in Odoo
+                existing_taxes = self.env['account.tax'].browse(taxes).exists()
+                _logger.info("Tax validation - Requested IDs: %s, Existing IDs: %s", taxes, existing_taxes.ids)
+                if len(existing_taxes) != len(taxes):
+                    missing_taxes = set(taxes) - set(existing_taxes.ids)
+                    _logger.warning("Missing tax IDs in Odoo: %s", missing_taxes)
+                
+                order_line_data['tax_id'] = [(6, 0, taxes)]
+                _logger.info("Final tax_id format for order line: %s", order_line_data['tax_id'])
+            else:
+                order_line_data['tax_id'] = False
+                _logger.info("No taxes provided - setting tax_id to False")
+            
+            _logger.info("Final order_line_data before creation: %s", order_line_data)
             order_line_id = self.env['sale.order.line'].create(order_line_data)
+            _logger.info("Order line created successfully with ID: %s, taxes: %s", 
+                        order_line_id.id, order_line_id.tax_id.ids)
         except Exception as e:
             statusMessage = "Error in creating order Line on Odoo: %s" % str(e)
-            _logger.debug('## Exception create_sale_order_line for sale.order(%s) : %s'
-                          % (order_line_data('order_id'), statusMessage))
+            _logger.error('## Exception create_sale_order_line for sale.order(%s) : %s'
+                          % (order_line_data.get('order_id'), statusMessage))
+            _logger.error('## Exception details: %s', str(e), exc_info=True)
+            _logger.error('## Full order_line_data causing error: %s', order_line_data)
             status = False
         finally:
             returnDict = dict(
