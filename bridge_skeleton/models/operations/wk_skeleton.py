@@ -174,6 +174,17 @@ class WkSkeleton(models.TransientModel):
             order_obj = self.env['sale.order'].create(sale_data)
             order_id = order_obj.id
             order_name = order_obj.name
+            
+            # Log order customer country information for tax debugging
+            if order_obj.partner_id:
+                _logger.info("Order %s created for customer %s from country: %s (ID: %s)", 
+                           order_name, order_obj.partner_id.name, 
+                           order_obj.partner_id.country_id.name if order_obj.partner_id.country_id else 'No country',
+                           order_obj.partner_id.country_id.id if order_obj.partner_id.country_id else None)
+            if order_obj.partner_shipping_id and order_obj.partner_shipping_id != order_obj.partner_id:
+                _logger.info("Shipping address country: %s (ID: %s)", 
+                           order_obj.partner_shipping_id.country_id.name if order_obj.partner_shipping_id.country_id else 'No country',
+                           order_obj.partner_shipping_id.country_id.id if order_obj.partner_shipping_id.country_id else None)
             mapping_data = {
                 'ecommerce_channel': ecommerce_channel,
                 'odoo_order_id': order_id,

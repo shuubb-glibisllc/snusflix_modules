@@ -118,6 +118,8 @@ class WkSkeleton(models.TransientModel):
             # Enhanced tax logging
             taxes = order_line_data.get('tax_id', [])
             product_id = order_line_data.get('product_id')
+            odoo_product_taxes = []
+            
             _logger.info("Raw taxes received from OpenCart: %s (type: %s)", taxes, type(taxes))
             _logger.info("Product ID: %s, Order ID: %s", product_id, order_line_data.get('order_id'))
             
@@ -139,8 +141,9 @@ class WkSkeleton(models.TransientModel):
                 order_line_data['tax_id'] = [(6, 0, taxes)]
                 _logger.info("Final tax_id format for order line: %s", order_line_data['tax_id'])
             else:
-                order_line_data['tax_id'] = False
-                _logger.warning("🚨 NO TAXES PROVIDED from OpenCart for product %s - OpenCart tax resolution failed!", product_id)
+                # USE ODOO'S TAX SYSTEM: Let Odoo calculate taxes based on fiscal position and product
+                final_taxes = self._resolve_taxes_with_odoo_system(order_line_data, product_id, odoo_product_taxes)
+                order_line_data['tax_id'] = final_taxes
             
             _logger.info("Final order_line_data before creation: %s", order_line_data)
             order_line_id = self.env['sale.order.line'].create(order_line_data)
@@ -164,3 +167,141 @@ class WkSkeleton(models.TransientModel):
                     order_line_id=order_line_id.id
                 )
             return returnDict
+
+    def _resolve_taxes_with_odoo_system(self, order_line_data, product_id, odoo_product_taxes):
+        """
+        Use Odoo's native tax system with fiscal positions to determine correct taxes.
+        This leverages the synchronized taxes and Odoo's built-in tax calculation logic.
+        
+        @param order_line_data: Order line data dictionary
+        @param product_id: Odoo product ID
+        @param odoo_product_taxes: Product's default taxes from Odoo
+        @return: Tax assignment in Odoo format [(6, 0, [tax_ids])] or False
+        """
+        try:
+            # Get the sale order to access customer and fiscal position
+            order_id = order_line_data.get('order_id')
+            if not order_id:
+                _logger.warning("No order_id found in order_line_data")
+                return self._fallback_to_product_taxes(product_id, odoo_product_taxes)
+                
+            sale_order = self.env['sale.order'].browse(order_id)
+            if not sale_order:
+                _logger.warning("Sale order %s not found", order_id)
+                return self._fallback_to_product_taxes(product_id, odoo_product_taxes)
+            
+            # Get product object
+            if not product_id:
+                _logger.warning("No product_id provided")
+                return False
+                
+            product = self.env['product.product'].browse(product_id)
+            if not product.exists():
+                _logger.warning("Product %s not found", product_id)
+                return False
+                
+            _logger.info("🔍 Resolving taxes for product %s (%s) in order %s", 
+                        product.name, product_id, sale_order.name)
+            
+            # Get customer information for tax calculation
+            partner = sale_order.partner_id
+            partner_shipping = sale_order.partner_shipping_id or partner
+            partner_invoice = sale_order.partner_invoice_id or partner
+            
+            _logger.info("📍 Customer: %s, Shipping: %s (%s), Invoice: %s (%s)", 
+                        partner.name,
+                        partner_shipping.name, partner_shipping.country_id.name if partner_shipping.country_id else 'No country',
+                        partner_invoice.name, partner_invoice.country_id.name if partner_invoice.country_id else 'No country')
+            
+            # Method 1: Use sale order's fiscal position if already set
+            if sale_order.fiscal_position_id:
+                _logger.info("📋 Using existing fiscal position: %s", sale_order.fiscal_position_id.name)
+                fiscal_taxes = self._apply_fiscal_position(sale_order.fiscal_position_id, product)
+                if fiscal_taxes:
+                    return fiscal_taxes
+            
+            # Method 2: Determine fiscal position based on customer addresses
+            fiscal_position = self._determine_fiscal_position(partner, partner_shipping, partner_invoice, sale_order.company_id)
+            if fiscal_position:
+                _logger.info("📋 Determined fiscal position: %s", fiscal_position.name)
+                
+                # Update the sale order with the fiscal position for consistency
+                if not sale_order.fiscal_position_id:
+                    sale_order.write({'fiscal_position_id': fiscal_position.id})
+                    _logger.info("✅ Updated sale order %s with fiscal position %s", sale_order.name, fiscal_position.name)
+                
+                fiscal_taxes = self._apply_fiscal_position(fiscal_position, product)
+                if fiscal_taxes:
+                    return fiscal_taxes
+            
+            # Method 3: Use product's default taxes if no fiscal position applies
+            if odoo_product_taxes:
+                _logger.info("🔄 Using product default taxes: %s", odoo_product_taxes)
+                return [(6, 0, odoo_product_taxes)]
+            
+            _logger.warning("🚨 No taxes found for product %s", product.name)
+            return False
+            
+        except Exception as e:
+            _logger.error("Error in Odoo tax system resolution: %s", str(e), exc_info=True)
+            return self._fallback_to_product_taxes(product_id, odoo_product_taxes)
+    
+    def _determine_fiscal_position(self, partner, partner_shipping, partner_invoice, company):
+        """
+        Determine the appropriate fiscal position using Odoo's built-in logic
+        """
+        try:
+            # Use Odoo's fiscal position determination logic
+            # This considers country, country group, state, VAT, etc.
+            fiscal_position = self.env['account.fiscal.position'].get_fiscal_position(
+                company.id,
+                partner.id,
+                delivery_id=partner_shipping.id if partner_shipping != partner else None
+            )
+            
+            if fiscal_position:
+                fiscal_pos = self.env['account.fiscal.position'].browse(fiscal_position)
+                _logger.info("✅ Determined fiscal position: %s (ID: %s)", fiscal_pos.name, fiscal_position)
+                return fiscal_pos
+            else:
+                _logger.info("No fiscal position determined for customer")
+                return None
+                
+        except Exception as e:
+            _logger.error("Error determining fiscal position: %s", str(e))
+            return None
+    
+    def _apply_fiscal_position(self, fiscal_position, product):
+        """
+        Apply fiscal position to product taxes using Odoo's mapping
+        """
+        try:
+            if not product.taxes_id:
+                _logger.info("Product %s has no taxes to map", product.name)
+                return None
+            
+            # Use fiscal position to map product taxes
+            mapped_taxes = fiscal_position.map_tax(product.taxes_id)
+            
+            if mapped_taxes:
+                _logger.info("✅ Fiscal position %s mapped taxes: %s -> %s", 
+                           fiscal_position.name, product.taxes_id.ids, mapped_taxes.ids)
+                return [(6, 0, mapped_taxes.ids)]
+            else:
+                _logger.info("Fiscal position %s returned no mapped taxes for product %s", 
+                           fiscal_position.name, product.name)
+                return None
+                
+        except Exception as e:
+            _logger.error("Error applying fiscal position: %s", str(e))
+            return None
+    
+    def _fallback_to_product_taxes(self, product_id, odoo_product_taxes):
+        """Fallback to product's default taxes"""
+        if product_id and odoo_product_taxes:
+            _logger.warning("🔄 FALLBACK: Using Odoo product taxes %s for product %s", 
+                          odoo_product_taxes, product_id)
+            return [(6, 0, odoo_product_taxes)]
+        else:
+            _logger.warning("🚨 NO TAXES: No taxes found for product %s", product_id)
+            return False
