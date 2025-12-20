@@ -158,6 +158,12 @@ class WkSkeleton(models.TransientModel):
         _logger.info("Incoming sale_data: %s", sale_data)
         _logger.info("Context: %s", ctx)
         
+        # Debug fiscal position data in sale_data
+        if 'partner_invoice_id' in sale_data:
+            _logger.info("📍 INVOICE ADDRESS ID in sale_data: %s", sale_data['partner_invoice_id'])
+        else:
+            _logger.warning("❌ NO partner_invoice_id found in sale_data")
+        
         # check sale_data for min no of keys presen or not
         order_name, order_id, status, status_message = "", False, True, "Order Successfully Created."
         ecommerce_channel = sale_data.get('ecommerce_channel')

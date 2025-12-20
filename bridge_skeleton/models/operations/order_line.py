@@ -94,9 +94,18 @@ class WkSkeleton(models.TransientModel):
         order_line_id = False
         statusMessage = "Order Line Successfully Created."
         
-        # Log incoming order line data for debugging
+        # Enhanced debugging for order line and tax data
         _logger.info("=== ORDER LINE CREATION DEBUG ===")
         _logger.info("Incoming order_line_data: %s", order_line_data)
+        
+        # Detailed tax debugging
+        taxes = order_line_data.get('tax_id', [])
+        _logger.info("=== TAX DEBUG - OpenCart to Odoo ===")
+        _logger.info("Raw tax data from OpenCart: %s (type: %s)", taxes, type(taxes))
+        if taxes:
+            _logger.info("✅ TAXES PASSED: OpenCart sent %d tax IDs: %s", len(taxes), taxes)
+        else:
+            _logger.info("❌ NO TAXES PASSED: OpenCart sent empty/no tax data")
         
         try:
             # To FIX:
@@ -115,13 +124,13 @@ class WkSkeleton(models.TransientModel):
                     name=productObj.description_sale or productObj.name
                 )
             
-            # Enhanced tax logging
-            taxes = order_line_data.get('tax_id', [])
+            # Enhanced tax logging and validation
             product_id = order_line_data.get('product_id')
+            order_id = order_line_data.get('order_id')
             odoo_product_taxes = []
             
-            _logger.info("Raw taxes received from OpenCart: %s (type: %s)", taxes, type(taxes))
-            _logger.info("Product ID: %s, Order ID: %s", product_id, order_line_data.get('order_id'))
+            _logger.info("=== TAX PROCESSING DEBUG ===")
+            _logger.info("Product ID: %s, Order ID: %s", product_id, order_id)
             
             # Check if product has taxes configured in Odoo for comparison
             if product_id:
@@ -131,19 +140,30 @@ class WkSkeleton(models.TransientModel):
                            product_obj.name, product_id, odoo_product_taxes)
             
             if taxes:
+                _logger.info("🔍 VALIDATING OPENCART TAXES...")
                 # Validate tax IDs exist in Odoo
                 existing_taxes = self.env['account.tax'].browse(taxes).exists()
                 _logger.info("Tax validation - Requested IDs: %s, Existing IDs: %s", taxes, existing_taxes.ids)
+                
                 if len(existing_taxes) != len(taxes):
                     missing_taxes = set(taxes) - set(existing_taxes.ids)
-                    _logger.warning("Missing tax IDs in Odoo: %s", missing_taxes)
+                    _logger.warning("❌ MISSING TAXES: OpenCart sent tax IDs that don't exist in Odoo: %s", missing_taxes)
+                    # Log tax names for existing taxes
+                    if existing_taxes:
+                        tax_names = [f"{tax.name} (ID: {tax.id})" for tax in existing_taxes]
+                        _logger.info("✅ VALID TAXES: %s", tax_names)
+                else:
+                    tax_names = [f"{tax.name} (ID: {tax.id})" for tax in existing_taxes]
+                    _logger.info("✅ ALL TAXES VALID: %s", tax_names)
                 
                 order_line_data['tax_id'] = [(6, 0, taxes)]
-                _logger.info("Final tax_id format for order line: %s", order_line_data['tax_id'])
+                _logger.info("📋 FINAL TAX ASSIGNMENT: %s", order_line_data['tax_id'])
             else:
+                _logger.info("🔄 NO TAXES FROM OPENCART - Using Odoo's tax system...")
                 # USE ODOO'S TAX SYSTEM: Let Odoo calculate taxes based on fiscal position and product
                 final_taxes = self._resolve_taxes_with_odoo_system(order_line_data, product_id, odoo_product_taxes)
                 order_line_data['tax_id'] = final_taxes
+                _logger.info("📋 ODOO CALCULATED TAXES: %s", final_taxes)
             
             _logger.info("Final order_line_data before creation: %s", order_line_data)
             order_line_id = self.env['sale.order.line'].create(order_line_data)
