@@ -153,10 +153,32 @@ class WkSkeleton(models.TransientModel):
         @return: A dictionary with status, order_id, and status_message"""
         ctx = dict(self._context or {})
         
-        # Enhanced logging for order creation
-        _logger.info("=== ORDER CREATION DEBUG ===")
-        _logger.info("Incoming sale_data: %s", sale_data)
-        _logger.info("Context: %s", ctx)
+        # COMPLETE REQUEST BODY LOGGING - Full OpenCart payload capture
+        _logger.info("=" * 80)
+        _logger.info("🚀 OPENCART TO ODOO - COMPLETE REQUEST CAPTURE")
+        _logger.info("=" * 80)
+        _logger.info("📦 FULL SALE_DATA PAYLOAD FROM OPENCART:")
+        _logger.info("Type: %s", type(sale_data))
+        _logger.info("Length: %s fields", len(sale_data) if isinstance(sale_data, dict) else 'N/A')
+        
+        # Pretty print the entire sale_data with field-by-field breakdown
+        if isinstance(sale_data, dict):
+            _logger.info("📋 FIELD-BY-FIELD BREAKDOWN:")
+            for key, value in sale_data.items():
+                _logger.info("  %-20s: %s (type: %s)", key, value, type(value).__name__)
+        else:
+            _logger.info("Raw sale_data: %s", sale_data)
+            
+        _logger.info("🌐 FULL CONTEXT FROM OPENCART:")
+        _logger.info("Type: %s", type(ctx))
+        if isinstance(ctx, dict):
+            _logger.info("📋 CONTEXT BREAKDOWN:")
+            for key, value in ctx.items():
+                _logger.info("  %-20s: %s (type: %s)", key, value, type(value).__name__)
+        else:
+            _logger.info("Raw context: %s", ctx)
+            
+        _logger.info("=" * 80)
         
         # Debug fiscal position data in sale_data
         if 'partner_invoice_id' in sale_data:

@@ -36,6 +36,26 @@ class WkSkeleton(models.TransientModel):
         """ @params order_line: A dictionary of sale ordre line fields
                 @params context: a standard odoo Dictionary with context having keyword to check origin of fumction call and identify type of line for shipping and vaoucher
                 @return : A dictionary with updated values of order line"""
+        
+        # COMPLETE SHIPPING/VOUCHER LINE REQUEST LOGGING
+        _logger.info("=" * 80)
+        _logger.info("🚚 OPENCART SHIPPING/VOUCHER LINE - COMPLETE REQUEST CAPTURE")
+        _logger.info("=" * 80)
+        _logger.info("📦 FULL SHIPPING/VOUCHER LINE DATA FROM OPENCART:")
+        _logger.info("Type: %s", type(order_line))
+        _logger.info("Length: %s fields", len(order_line) if isinstance(order_line, dict) else 'N/A')
+        
+        if isinstance(order_line, dict):
+            _logger.info("📋 SHIPPING/VOUCHER LINE BREAKDOWN:")
+            for key, value in order_line.items():
+                _logger.info("  %-20s: %s (type: %s)", key, value, type(value).__name__)
+                
+        # Check if this is shipping line with taxes
+        if order_line.get('tax_id'):
+            _logger.info("🏷️  SHIPPING TAXES FROM OPENCART: %s", order_line.get('tax_id'))
+        
+        _logger.info("=" * 80)
+        
         ctx = dict(self._context or {})
         instance_id = ctx.get('instance_id', False)
         order_line['product_id'] = self.get_default_virtual_product_id(
@@ -94,18 +114,31 @@ class WkSkeleton(models.TransientModel):
         order_line_id = False
         statusMessage = "Order Line Successfully Created."
         
-        # Enhanced debugging for order line and tax data
-        _logger.info("=== ORDER LINE CREATION DEBUG ===")
-        _logger.info("Incoming order_line_data: %s", order_line_data)
+        # COMPLETE ORDER LINE REQUEST BODY LOGGING
+        _logger.info("=" * 80)
+        _logger.info("📝 OPENCART ORDER LINE - COMPLETE REQUEST CAPTURE")
+        _logger.info("=" * 80)
+        _logger.info("📦 FULL ORDER_LINE_DATA PAYLOAD FROM OPENCART:")
+        _logger.info("Type: %s", type(order_line_data))
+        _logger.info("Length: %s fields", len(order_line_data) if isinstance(order_line_data, dict) else 'N/A')
+        
+        # Field-by-field breakdown of order line data
+        if isinstance(order_line_data, dict):
+            _logger.info("📋 ORDER LINE FIELD-BY-FIELD BREAKDOWN:")
+            for key, value in order_line_data.items():
+                _logger.info("  %-20s: %s (type: %s)", key, value, type(value).__name__)
+        else:
+            _logger.info("Raw order_line_data: %s", order_line_data)
         
         # Detailed tax debugging
         taxes = order_line_data.get('tax_id', [])
-        _logger.info("=== TAX DEBUG - OpenCart to Odoo ===")
+        _logger.info("🏷️  TAX DEBUG - OpenCart to Odoo:")
         _logger.info("Raw tax data from OpenCart: %s (type: %s)", taxes, type(taxes))
         if taxes:
             _logger.info("✅ TAXES PASSED: OpenCart sent %d tax IDs: %s", len(taxes), taxes)
         else:
             _logger.info("❌ NO TAXES PASSED: OpenCart sent empty/no tax data")
+        _logger.info("=" * 80)
         
         try:
             # To FIX:
