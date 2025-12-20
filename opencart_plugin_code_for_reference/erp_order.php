@@ -444,20 +444,53 @@ class ModelCatalogErpOrder extends Model {
         $this->load->model('catalog/erp_country');
         // load another model functions
         $this->load->model('catalog/erp_state');
+        
+        // Enhanced address creation debugging
+        error_log("=== ADDRESS CREATION DEBUG ===");
+        error_log("Creating address for: " . $data['firstname'] . " " . $data['lastname']);
+        error_log("OpenCart country_id: " . $data['country_id']);
+        error_log("OpenCart state_id: " . $data['state_id']);
+        
         $country_iso_code = $this->model_catalog_erp_country->get_iso($data['country_id']);
         $state_dtls   = $this->model_catalog_erp_state->get_state_dtls($data['state_id']);
+        
+        // Use a simpler approach - let Odoo find the country by ISO code
+        error_log("Country ISO: $country_iso_code");
+        error_log("State name: " . ($state_dtls['name'] ?? 'No state'));
+        
+        // First try to create with country_code and let Odoo handle it
         $key = array(
             'parent_id' => (int)$partner_id,
-            'name' => $data['firstname'],
+            'name' => $data['firstname'] . ' ' . $data['lastname'],
             'email' => $data['email'],
             'street' => $data['address_1'],
             'street2' => $data['address_2'],
             'phone' => $data['telephone'],
             'zip' => $data['zip'],
             'city' => $data['city'],
-            'country_code' => $country_iso_code,
-            'region' =>  $state_dtls['name'],
         );
+        
+        // Add country information - try multiple methods
+        if (!empty($country_iso_code)) {
+            // Method 1: Try with country code (ISO)
+            $key['country_code'] = $country_iso_code;
+            error_log("Using country_code: $country_iso_code");
+        }
+        
+        // Method 2: Also try to find country by name for backup
+        $country_name = $this->getCountryNameById($data['country_id']);
+        if (!empty($country_name)) {
+            // This can help Odoo match the country
+            $key['country_name'] = $country_name;
+            error_log("Using country_name: $country_name");
+        }
+        
+        // Add state information if available
+        if (!empty($state_dtls['name'])) {
+            $key['state_name'] = $state_dtls['name'];
+        }
+        
+        error_log("Final address data for Odoo: " . json_encode($key));
         $res_resp = $this->model_catalog_connection->callOdooRpc('res.partner',
             'create', [[$key]], $userId, $client, $db, $pwd, $needContext = true);
         if (!$res_resp[0]==0) {
@@ -465,6 +498,19 @@ class ModelCatalogErpOrder extends Model {
         } else {
             return 'No Customer Created At Odoo end';
         }
+    }
+
+    // Helper method to get country name by ID
+    private function getCountryNameById($country_id) {
+        try {
+            $country_query = $this->db->query("SELECT name FROM " . DB_PREFIX . "country WHERE country_id = '" . (int)$country_id . "'");
+            if ($country_query->num_rows > 0) {
+                return $country_query->row['name'];
+            }
+        } catch (Exception $e) {
+            error_log("Error getting country name: " . $e->getMessage());
+        }
+        return '';
     }
 
     public function getRates($value, $tax_class_id, $customer_group_id, $shipping_address, $payment_address, $store_address) {

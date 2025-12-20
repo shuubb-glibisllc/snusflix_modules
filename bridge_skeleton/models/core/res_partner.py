@@ -82,25 +82,58 @@ class ResPartner(models.Model):
         return super().unlink()
 
     def customer_array(self, data):
+        import logging
+        _logger = logging.getLogger(__name__)
+        
         dic = {}
         stateModel = self.env['res.country.state']
         country_code = data.pop('country_code', False)
+        country_name = data.pop('country_name', False)
         region = data.pop('region', False)
+        state_name = data.pop('state_name', False)
+        
+        # Enhanced country resolution with debugging
+        _logger.info("🌍 ADDRESS COUNTRY RESOLUTION DEBUG")
+        _logger.info("Received - country_code: %s, country_name: %s", country_code, country_name)
+        
+        countryObj = None
         if country_code:
             countryObj = self.env['res.country'].search(
                 [('code', '=', country_code)], limit=1)
             if countryObj:
+                _logger.info("✅ Found country by code '%s': %s (ID: %s)", country_code, countryObj.name, countryObj.id)
                 data['country_id'] = countryObj.id
-                if region:
-                    region = _unescape(region)
+            else:
+                _logger.warning("❌ No country found for code: %s", country_code)
+        
+        # Fallback: try to find country by name if code didn't work
+        if not countryObj and country_name:
+            _logger.info("🔄 Trying to find country by name: %s", country_name)
+            countryObj = self.env['res.country'].search(
+                [('name', 'ilike', country_name)], limit=1)
+            if countryObj:
+                _logger.info("✅ Found country by name '%s': %s (ID: %s)", country_name, countryObj.name, countryObj.id)
+                data['country_id'] = countryObj.id
+            else:
+                _logger.warning("❌ No country found for name: %s", country_name)
+        
+        if countryObj:
+                # Handle state/region - try both region and state_name
+                region_to_use = region or state_name
+                if region_to_use:
+                    region_to_use = _unescape(region_to_use)
+                    _logger.info("🏛️  Looking for state/region: %s in country %s", region_to_use, countryObj.name)
+                    
                     stateObj = stateModel.search([
-                        ('name', '=', region),
+                        ('name', '=', region_to_use),
                         ('country_id', '=', countryObj.id)
                     ], limit=1)
                     if stateObj:
+                        _logger.info("✅ Found state: %s (ID: %s)", stateObj.name, stateObj.id)
                         data['state_id'] = stateObj.id
                     else:
-                        dic['name'] = region
+                        _logger.info("🔄 State not found, creating new state: %s", region_to_use)
+                        dic['name'] = region_to_use
                         dic['country_id'] = countryObj.id
                         code = region[:3].upper()
                         temp = code
