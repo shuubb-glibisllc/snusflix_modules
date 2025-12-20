@@ -238,8 +238,9 @@ class WkSkeleton(models.TransientModel):
     @api.model
     def _set_fiscal_position_from_invoice_country(self, sale_order):
         """
-        Set fiscal position on sales order based on invoice country.
-        This ensures proper tax calculation based on the invoice address country.
+        Set fiscal position on sales order based on invoice address country from OpenCart.
+        OpenCart sends partner_invoice_id which contains the billing/invoice address.
+        This ensures proper tax localization based on the invoice address country.
         
         @param sale_order: sale.order record
         """
@@ -249,32 +250,48 @@ class WkSkeleton(models.TransientModel):
                            sale_order.name, sale_order.fiscal_position_id.name)
                 return
             
-            # Get invoice address country
-            partner = sale_order.partner_id
-            partner_invoice = sale_order.partner_invoice_id or partner
+            # Get invoice address from OpenCart (partner_invoice_id contains billing address)
+            partner_invoice = sale_order.partner_invoice_id
             
+            if not partner_invoice:
+                _logger.warning("No invoice address (partner_invoice_id) found for order %s", sale_order.name)
+                return
+                
             if not partner_invoice.country_id:
-                _logger.warning("No invoice country found for order %s", sale_order.name)
+                _logger.warning("No country set on invoice address for order %s (partner: %s)", 
+                              sale_order.name, partner_invoice.name)
                 return
             
-            _logger.info("Determining fiscal position for order %s based on invoice country: %s", 
-                        sale_order.name, partner_invoice.country_id.name)
+            invoice_country = partner_invoice.country_id
+            _logger.info("Determining fiscal position for order %s based on INVOICE address country: %s (partner_invoice_id: %s)", 
+                        sale_order.name, invoice_country.name, partner_invoice.id)
             
-            # Use Odoo's built-in fiscal position determination
+            # Find fiscal position specifically for the invoice country
+            # Use the invoice address partner directly for fiscal position determination
             fiscal_position_id = self.env['account.fiscal.position'].get_fiscal_position(
                 sale_order.company_id.id,
-                partner.id,
-                delivery_id=partner_invoice.id if partner_invoice != partner else None
+                partner_invoice.id  # Use invoice address partner for fiscal position lookup
             )
             
             if fiscal_position_id:
                 fiscal_position = self.env['account.fiscal.position'].browse(fiscal_position_id)
                 sale_order.write({'fiscal_position_id': fiscal_position_id})
-                _logger.info("✅ Set fiscal position %s for order %s based on invoice country %s", 
-                           fiscal_position.name, sale_order.name, partner_invoice.country_id.name)
+                _logger.info("✅ Set fiscal position '%s' for order %s based on INVOICE country %s", 
+                           fiscal_position.name, sale_order.name, invoice_country.name)
             else:
-                _logger.info("No fiscal position found for invoice country %s on order %s", 
-                           partner_invoice.country_id.name, sale_order.name)
+                # If no specific fiscal position found, look for one that matches the invoice country
+                fiscal_positions = self.env['account.fiscal.position'].search([
+                    ('country_id', '=', invoice_country.id),
+                    ('company_id', '=', sale_order.company_id.id)
+                ], limit=1)
+                
+                if fiscal_positions:
+                    sale_order.write({'fiscal_position_id': fiscal_positions.id})
+                    _logger.info("✅ Set fiscal position '%s' for order %s based on INVOICE country %s (direct match)", 
+                               fiscal_positions.name, sale_order.name, invoice_country.name)
+                else:
+                    _logger.warning("❌ No fiscal position found for INVOICE country %s on order %s", 
+                                  invoice_country.name, sale_order.name)
                 
         except Exception as e:
             _logger.error("Error setting fiscal position from invoice country for order %s: %s", 
