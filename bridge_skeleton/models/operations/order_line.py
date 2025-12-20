@@ -313,8 +313,7 @@ class WkSkeleton(models.TransientModel):
                            partner_invoice.name, partner_invoice.country_id.name)
                 fiscal_position_id = self.env['account.fiscal.position']._get_fiscal_position(
                     partner_invoice,
-                    delivery=partner_shipping if partner_shipping != partner_invoice else None,
-                    company=company
+                    delivery=partner_shipping if partner_shipping != partner_invoice else None
                 )
                 if fiscal_position_id:
                     fiscal_pos = self.env['account.fiscal.position'].browse(fiscal_position_id)
@@ -327,8 +326,7 @@ class WkSkeleton(models.TransientModel):
                            partner_shipping.name, partner_shipping.country_id.name)
                 fiscal_position_id = self.env['account.fiscal.position']._get_fiscal_position(
                     partner_shipping,
-                    delivery=partner_shipping,
-                    company=company
+                    delivery=partner_shipping
                 )
                 if fiscal_position_id:
                     fiscal_pos = self.env['account.fiscal.position'].browse(fiscal_position_id)
@@ -341,8 +339,7 @@ class WkSkeleton(models.TransientModel):
                            partner.name, partner.country_id.name)
                 fiscal_position_id = self.env['account.fiscal.position']._get_fiscal_position(
                     partner,
-                    delivery=partner_shipping if partner_shipping != partner else None,
-                    company=company
+                    delivery=partner_shipping if partner_shipping != partner else None
                 )
                 if fiscal_position_id:
                     fiscal_pos = self.env['account.fiscal.position'].browse(fiscal_position_id)

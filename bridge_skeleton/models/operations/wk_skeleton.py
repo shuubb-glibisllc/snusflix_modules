@@ -298,8 +298,7 @@ class WkSkeleton(models.TransientModel):
             # Use Odoo's built-in fiscal position determination with proper API
             fiscal_position_id = self.env['account.fiscal.position']._get_fiscal_position(
                 partner_invoice,  # Use invoice address partner for fiscal position lookup
-                delivery=partner_invoice if partner_invoice != sale_order.partner_id else None,
-                company=sale_order.company_id
+                delivery=partner_invoice if partner_invoice != sale_order.partner_id else None
             )
             
             if fiscal_position_id:

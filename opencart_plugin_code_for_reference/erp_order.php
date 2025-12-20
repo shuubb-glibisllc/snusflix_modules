@@ -127,14 +127,28 @@ class ModelCatalogErpOrder extends Model {
                 //get tax from function
                 $tax_class_id = $this->db->query("SELECT tax_class_id FROM ".DB_PREFIX."product WHERE product_id = '".$itm['product_id']."'")->row;
 
-                if($tax_class_id)
+                // Enhanced tax debugging for OpenCart
+                error_log("=== OPENCART TAX DEBUG ===");
+                error_log("Product ID: " . $itm['product_id'] . ", Tax Class: " . json_encode($tax_class_id));
+                error_log("Payment Address: " . json_encode($payment_address));
+                error_log("Customer Group: " . $This_order['customer_group_id']);
+
+                $tax_per_product = array(); // Initialize to avoid undefined variable
+                if($tax_class_id && !empty($tax_class_id['tax_class_id'])) {
                     $tax_per_product = $this->getRates($ItemBasePrice, $tax_class_id['tax_class_id'], $This_order['customer_group_id'],$shipping_address,$payment_address,$store_address);
+                    error_log("Tax rates calculated: " . json_encode($tax_per_product));
+                } else {
+                    error_log("No tax class found for product " . $itm['product_id']);
+                }
 
                 foreach ($tax_per_product as $key => $value) {
+                    error_log("Processing tax rate ID: $key, checking mapping to ERP...");
                     $erp_tax_id = $this->model_catalog_erp_tax->check_specific_tax($key, $client, $userId, $db, $pwd);
+                    error_log("ERP tax ID for rate $key: " . ($erp_tax_id ? $erp_tax_id : 'NOT FOUND'));
                     if($erp_tax_id)
                         $erp_tax_array[] = (int)$erp_tax_id;
                 }
+                error_log("Final ERP tax array: " . json_encode($erp_tax_array));
                 $Order_line_array =  array(
                     'order_id'=>$odoo_order_id,
                     'product_id'=>(int)$erp_product_id,
@@ -222,14 +236,27 @@ class ModelCatalogErpOrder extends Model {
                 $shipping_code_array = explode('.',$This_order['shipping_code']);
                 $shipping_code = $shipping_code_array[0];
                 $shipping_tax_class_id = $this->config->get('shipping_'.$shipping_code.'_tax_class_id');
+                
+                // Enhanced shipping tax debugging
+                error_log("=== SHIPPING TAX DEBUG ===");
+                error_log("Shipping code: $shipping_code, Tax class ID: $shipping_tax_class_id");
+                error_log("Shipping cost: $shipping_cost");
+                
                 if($shipping_tax_class_id){
                     $shipping_tax = $this->getRates($shipping_cost, $shipping_tax_class_id, $This_order['customer_group_id'], $shipping_address, $payment_address, $store_address);
+                    error_log("Shipping tax rates: " . json_encode($shipping_tax));
+                    
                     foreach ($shipping_tax as $key => $value) {
+                       error_log("Processing shipping tax rate ID: $key");
                        $erp_tax_id = $this->model_catalog_erp_tax->check_specific_tax($key, $client, $userId, $db, $pwd);
+                       error_log("Shipping ERP tax ID for rate $key: " . ($erp_tax_id ? $erp_tax_id : 'NOT FOUND'));
                         if($erp_tax_id)
                             $erp_tax_array[] = (int)$erp_tax_id;
                     }
+                } else {
+                    error_log("No shipping tax class configured for method: $shipping_code");
                 }
+                error_log("Final shipping tax array: " . json_encode($erp_tax_array));
                 $shipping_line_array = array(
                     'order_id'=>$odoo_order_id,
                     'name'=> 'Shipping',
@@ -446,9 +473,17 @@ class ModelCatalogErpOrder extends Model {
             $customer_group_id = $this->config->get('config_customer_group_id');
         }
 
-        if ($shipping_address) {
-            $tax_query = $this->db->query("SELECT tr2.tax_rate_id, tr2.name, tr2.rate, tr2.type, tr1.priority FROM " . DB_PREFIX . "tax_rule tr1 LEFT JOIN " . DB_PREFIX . "tax_rate tr2 ON (tr1.tax_rate_id = tr2.tax_rate_id) INNER JOIN " . DB_PREFIX . "tax_rate_to_customer_group tr2cg ON (tr2.tax_rate_id = tr2cg.tax_rate_id) LEFT JOIN " . DB_PREFIX . "zone_to_geo_zone z2gz ON (tr2.geo_zone_id = z2gz.geo_zone_id) LEFT JOIN " . DB_PREFIX . "geo_zone gz ON (tr2.geo_zone_id = gz.geo_zone_id) WHERE tr1.tax_class_id = '" . (int)$tax_class_id . "' AND tr1.based = 'shipping' AND tr2cg.customer_group_id = '" . (int)$customer_group_id . "' AND z2gz.country_id = '" . (int)$shipping_address['country_id'] . "' AND (z2gz.zone_id = '0' OR z2gz.zone_id = '" . (int)$shipping_address['zone_id'] . "') ORDER BY tr1.priority ASC");
+        // Enhanced tax rate debugging
+        error_log("getRates called with: value=$value, tax_class_id=$tax_class_id, customer_group_id=$customer_group_id");
+        error_log("Payment address (PRIORITY): " . json_encode($payment_address));
+        error_log("Shipping address: " . json_encode($shipping_address));
 
+        // PRIORITY 1: Payment address (invoice address) - Most important for tax determination
+        if ($payment_address && !empty($payment_address['country_id'])) {
+            error_log("Checking payment-based taxes for country: " . $payment_address['country_id']);
+            $tax_query = $this->db->query("SELECT tr2.tax_rate_id, tr2.name, tr2.rate, tr2.type, tr1.priority FROM " . DB_PREFIX . "tax_rule tr1 LEFT JOIN " . DB_PREFIX . "tax_rate tr2 ON (tr1.tax_rate_id = tr2.tax_rate_id) INNER JOIN " . DB_PREFIX . "tax_rate_to_customer_group tr2cg ON (tr2.tax_rate_id = tr2cg.tax_rate_id) LEFT JOIN " . DB_PREFIX . "zone_to_geo_zone z2gz ON (tr2.geo_zone_id = z2gz.geo_zone_id) LEFT JOIN " . DB_PREFIX . "geo_zone gz ON (tr2.geo_zone_id = gz.geo_zone_id) WHERE tr1.tax_class_id = '" . (int)$tax_class_id . "' AND tr1.based = 'payment' AND tr2cg.customer_group_id = '" . (int)$customer_group_id . "' AND z2gz.country_id = '" . (int)$payment_address['country_id'] . "' AND (z2gz.zone_id = '0' OR z2gz.zone_id = '" . (int)$payment_address['zone_id'] . "') ORDER BY tr1.priority ASC");
+
+            error_log("Payment tax query found " . count($tax_query->rows) . " tax rates");
             foreach ($tax_query->rows as $result) {
                 $tax_rates[$result['tax_rate_id']] = array(
                     'tax_rate_id' => $result['tax_rate_id'],
@@ -457,9 +492,31 @@ class ModelCatalogErpOrder extends Model {
                     'type'        => $result['type'],
                     'priority'    => $result['priority']
                 );
+                error_log("Found payment tax: " . $result['name'] . " (ID: " . $result['tax_rate_id'] . ", Rate: " . $result['rate'] . "%)");
             }
         }
 
+        // PRIORITY 2: Shipping address - Secondary priority
+        if ($shipping_address && !empty($shipping_address['country_id'])) {
+            error_log("Checking shipping-based taxes for country: " . $shipping_address['country_id']);
+            $tax_query = $this->db->query("SELECT tr2.tax_rate_id, tr2.name, tr2.rate, tr2.type, tr1.priority FROM " . DB_PREFIX . "tax_rule tr1 LEFT JOIN " . DB_PREFIX . "tax_rate tr2 ON (tr1.tax_rate_id = tr2.tax_rate_id) INNER JOIN " . DB_PREFIX . "tax_rate_to_customer_group tr2cg ON (tr2.tax_rate_id = tr2cg.tax_rate_id) LEFT JOIN " . DB_PREFIX . "zone_to_geo_zone z2gz ON (tr2.geo_zone_id = z2gz.geo_zone_id) LEFT JOIN " . DB_PREFIX . "geo_zone gz ON (tr2.geo_zone_id = gz.geo_zone_id) WHERE tr1.tax_class_id = '" . (int)$tax_class_id . "' AND tr1.based = 'shipping' AND tr2cg.customer_group_id = '" . (int)$customer_group_id . "' AND z2gz.country_id = '" . (int)$shipping_address['country_id'] . "' AND (z2gz.zone_id = '0' OR z2gz.zone_id = '" . (int)$shipping_address['zone_id'] . "') ORDER BY tr1.priority ASC");
+
+            error_log("Shipping tax query found " . count($tax_query->rows) . " tax rates");
+            foreach ($tax_query->rows as $result) {
+                if (!isset($tax_rates[$result['tax_rate_id']])) { // Don't override payment-based taxes
+                    $tax_rates[$result['tax_rate_id']] = array(
+                        'tax_rate_id' => $result['tax_rate_id'],
+                        'name'        => $result['name'],
+                        'rate'        => $result['rate'],
+                        'type'        => $result['type'],
+                        'priority'    => $result['priority']
+                    );
+                    error_log("Found shipping tax: " . $result['name'] . " (ID: " . $result['tax_rate_id'] . ", Rate: " . $result['rate'] . "%)");
+                }
+            }
+        }
+
+        // Keep the original payment address logic for backward compatibility
         if ($payment_address) {
             $tax_query = $this->db->query("SELECT tr2.tax_rate_id, tr2.name, tr2.rate, tr2.type, tr1.priority FROM " . DB_PREFIX . "tax_rule tr1 LEFT JOIN " . DB_PREFIX . "tax_rate tr2 ON (tr1.tax_rate_id = tr2.tax_rate_id) INNER JOIN " . DB_PREFIX . "tax_rate_to_customer_group tr2cg ON (tr2.tax_rate_id = tr2cg.tax_rate_id) LEFT JOIN " . DB_PREFIX . "zone_to_geo_zone z2gz ON (tr2.geo_zone_id = z2gz.geo_zone_id) LEFT JOIN " . DB_PREFIX . "geo_zone gz ON (tr2.geo_zone_id = gz.geo_zone_id) WHERE tr1.tax_class_id = '" . (int)$tax_class_id . "' AND tr1.based = 'payment' AND tr2cg.customer_group_id = '" . (int)$customer_group_id . "' AND z2gz.country_id = '" . (int)$payment_address['country_id'] . "' AND (z2gz.zone_id = '0' OR z2gz.zone_id = '" . (int)$payment_address['zone_id'] . "') ORDER BY tr1.priority ASC");
 
