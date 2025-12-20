@@ -44,6 +44,17 @@ class ModelCatalogErpOrder extends Model {
                 $erp_carrier = $this->model_catalog_erp_carrier->check_specific_carrier($This_order['shipping_code'], $userId, $client, $db, $pwd);
                 $erp_carrier_id  = $erp_carrier['erp_id'];
             }
+            
+            // Get invoice country for fiscal position - simple approach
+            $invoice_country_code = '';
+            if ($This_order['payment_country_id']) {
+                $country_query = $this->db->query("SELECT iso_code_2 FROM " . DB_PREFIX . "country WHERE country_id = '" . (int)$This_order['payment_country_id'] . "'");
+                if ($country_query->num_rows) {
+                    $invoice_country_code = $country_query->row['iso_code_2'];
+                    error_log("🌍 COUNTRY OF SALE: Setting country_of_sale to '$invoice_country_code' for order $order_id");
+                }
+            }
+            
             $order_array =  array(
                 'partner_id' => (int)$partner_id,
                 'partner_invoice_id' => (int)$partner_invoice_id,
@@ -53,7 +64,8 @@ class ModelCatalogErpOrder extends Model {
                 'ecommerce_order_id' => (int)$order_id,
                 'carrier_id' => (int)$erp_carrier_id,
                 'ecommerce_channel' => 'opencart',
-                'origin' => $order_id
+                'origin' => $order_id,
+                'country_of_sale' => $invoice_country_code
             );
             $resp = $this->model_catalog_connection->callOdooRpc('wk.skeleton', 'create_order', [[$order_array]], $userId, $client, $db, $pwd, $needContext=true);
             if ($resp[0]==0) {
@@ -364,23 +376,35 @@ class ModelCatalogErpOrder extends Model {
             $partner_id = $this->model_catalog_erp_customer->check_specific_customer($This_order['customer_id'], $client, $userId, $cart_user='Front End', $db, $pwd);
             if(!$partner_id)
                 return array('Error customer chk specific');
+            
+            // Enhanced address handling with country-based logic
+            error_log("=== REGISTERED CUSTOMER ADDRESS HANDLING ===");
+            error_log("Customer ID: " . $This_order['customer_id'] . ", Partner ID: $partner_id");
+            
             $isDifferent = $this->checkAddresses($s, $p);
+            error_log("Shipping and payment addresses different: " . ($isDifferent ? 'YES' : 'NO'));
+            
+            // ALWAYS CREATE NEW ADDRESSES TO ENSURE CORRECT COUNTRY
+            // This prevents reusing old addresses with wrong countries
             if ($isDifferent == true) {
-                $shipping_address_id = $this->getAddressId($s);
-                if ($shipping_address_id) {
-                    $partner_shipping_id = $this->model_catalog_erp_customer->check_specific_address($shipping_address_id, $This_order['customer_id'], $userId, $client, $db, $pwd);
-				}
-				//Added Feature
-				else
-					$partner_shipping_id = $this->createErpAddress($s, $partner_id, $userId, $client, $db, $pwd, $cart_user);
+                error_log("Creating new shipping address for country: " . $s['country_id']);
+                $partner_shipping_id = $this->createErpAddress($s, $partner_id, $userId, $client, $db, $pwd, $cart_user);
+                error_log("Created shipping address with partner_id: $partner_shipping_id");
+            } else {
+                // Use invoice address for both if they're the same
+                $partner_shipping_id = null;
+                error_log("Shipping same as invoice - will use invoice address for both");
             }
-            $invoice_address_id = $this->getAddressId($p);
-            if ($invoice_address_id) {
-                $partner_invoice_id = $this->model_catalog_erp_customer->check_specific_address($invoice_address_id, $This_order['customer_id'], $userId, $client, $db, $pwd);
-			}
-			//Added feature
-			else
-            	$partner_invoice_id = $this->createErpAddress($p, $partner_id, $userId, $client, $db, $pwd, $cart_user);
+            
+            error_log("Creating new invoice address for country: " . $p['country_id']);
+            $partner_invoice_id = $this->createErpAddress($p, $partner_id, $userId, $client, $db, $pwd, $cart_user);
+            error_log("Created invoice address with partner_id: $partner_invoice_id");
+            
+            // If shipping is same as invoice, use invoice address for both
+            if (!$partner_shipping_id) {
+                $partner_shipping_id = $partner_invoice_id;
+                error_log("Using invoice address for shipping as well: $partner_shipping_id");
+            }
         }
 
         if($partner_invoice_id > 0 AND $partner_shipping_id > 0)

@@ -199,12 +199,20 @@ class WkSkeleton(models.TransientModel):
         sale_data.update(config_data)
 
         try:
+            # Extract and remove country_of_sale before order creation
+            country_of_sale = sale_data.pop('country_of_sale', None)
+            _logger.info("🌍 COUNTRY OF SALE from OpenCart: %s", country_of_sale)
+            
             order_obj = self.env['sale.order'].create(sale_data)
             order_id = order_obj.id
             order_name = order_obj.name
             
-            # Set fiscal position based on invoice country
-            self._set_fiscal_position_from_invoice_country(order_obj)
+            # Set fiscal position using the simpler country_of_sale approach
+            if country_of_sale:
+                self._set_fiscal_position_from_country_of_sale(order_obj, country_of_sale)
+            else:
+                # Fallback to the old method if country_of_sale not provided
+                self._set_fiscal_position_from_invoice_country(order_obj)
             
             # Log order customer country information for tax debugging
             if order_obj.partner_id:
@@ -262,6 +270,53 @@ class WkSkeleton(models.TransientModel):
                 'status': status,
                 'status_message': status_message
             }
+
+    @api.model
+    def _set_fiscal_position_from_country_of_sale(self, sale_order, country_code):
+        """
+        Set fiscal position on sales order based on country_of_sale from OpenCart.
+        This is the simpler, more direct approach that uses the country code 
+        sent directly from OpenCart.
+        
+        @param sale_order: sale.order record
+        @param country_code: ISO country code (e.g., 'PL', 'IT', 'DE')
+        """
+        try:
+            if sale_order.fiscal_position_id:
+                _logger.info("Order %s already has fiscal position: %s", 
+                           sale_order.name, sale_order.fiscal_position_id.name)
+                return
+            
+            if not country_code:
+                _logger.warning("No country_of_sale provided for order %s", sale_order.name)
+                return
+                
+            # Find country by ISO code
+            country = self.env['res.country'].search([('code', '=', country_code)], limit=1)
+            if not country:
+                _logger.warning("❌ Country not found for code: %s", country_code)
+                return
+                
+            _logger.info("🌍 Setting fiscal position for order %s based on country_of_sale: %s (%s)", 
+                        sale_order.name, country.name, country_code)
+            
+            # Look for fiscal position for this country
+            fiscal_positions = self.env['account.fiscal.position'].search([
+                ('country_id', '=', country.id),
+                ('company_id', '=', sale_order.company_id.id)
+            ], limit=1)
+            
+            if fiscal_positions:
+                sale_order.write({'fiscal_position_id': fiscal_positions.id})
+                _logger.info("✅ Set fiscal position '%s' for order %s based on country_of_sale %s", 
+                           fiscal_positions.name, sale_order.name, country.name)
+            else:
+                _logger.warning("❌ No fiscal position found for country %s on order %s", 
+                              country.name, sale_order.name)
+                
+        except Exception as e:
+            _logger.error("Error setting fiscal position from country_of_sale for order %s: %s", 
+                         sale_order.name, str(e), exc_info=True)
 
     @api.model
     def _set_fiscal_position_from_invoice_country(self, sale_order):
