@@ -273,8 +273,8 @@ class WkSkeleton(models.TransientModel):
                 if fiscal_taxes:
                     return fiscal_taxes
             
-            # Method 2: Determine fiscal position based on customer addresses
-            fiscal_position = self._determine_fiscal_position(partner, partner_shipping, partner_invoice, sale_order.company_id)
+            # Method 2: Determine fiscal position based on INVOICE address priority
+            fiscal_position = self._determine_fiscal_position_by_invoice(partner, partner_shipping, partner_invoice, sale_order.company_id)
             if fiscal_position:
                 _logger.info("📋 Determined fiscal position: %s", fiscal_position.name)
                 
@@ -299,6 +299,63 @@ class WkSkeleton(models.TransientModel):
             _logger.error("Error in Odoo tax system resolution: %s", str(e), exc_info=True)
             return self._fallback_to_product_taxes(product_id, odoo_product_taxes)
     
+    def _determine_fiscal_position_by_invoice(self, partner, partner_shipping, partner_invoice, company):
+        """
+        Determine fiscal position with INVOICE address priority:
+        1. Invoice address country (highest priority)
+        2. Shipping address country (if invoice missing)
+        3. Customer address country (fallback)
+        """
+        try:
+            # Priority 1: Invoice address
+            if partner_invoice and partner_invoice.country_id:
+                _logger.info("🏠 Using INVOICE address for fiscal position: %s (%s)", 
+                           partner_invoice.name, partner_invoice.country_id.name)
+                fiscal_position_id = self.env['account.fiscal.position']._get_fiscal_position(
+                    partner_invoice,
+                    delivery=partner_shipping if partner_shipping != partner_invoice else None,
+                    company=company
+                )
+                if fiscal_position_id:
+                    fiscal_pos = self.env['account.fiscal.position'].browse(fiscal_position_id)
+                    _logger.info("✅ Fiscal position from INVOICE address: %s", fiscal_pos.name)
+                    return fiscal_pos
+            
+            # Priority 2: Shipping address
+            if partner_shipping and partner_shipping.country_id and partner_shipping != partner_invoice:
+                _logger.info("🚚 Using SHIPPING address for fiscal position: %s (%s)", 
+                           partner_shipping.name, partner_shipping.country_id.name)
+                fiscal_position_id = self.env['account.fiscal.position']._get_fiscal_position(
+                    partner_shipping,
+                    delivery=partner_shipping,
+                    company=company
+                )
+                if fiscal_position_id:
+                    fiscal_pos = self.env['account.fiscal.position'].browse(fiscal_position_id)
+                    _logger.info("✅ Fiscal position from SHIPPING address: %s", fiscal_pos.name)
+                    return fiscal_pos
+            
+            # Priority 3: Customer address (fallback)
+            if partner and partner.country_id:
+                _logger.info("👤 Using CUSTOMER address for fiscal position: %s (%s)", 
+                           partner.name, partner.country_id.name)
+                fiscal_position_id = self.env['account.fiscal.position']._get_fiscal_position(
+                    partner,
+                    delivery=partner_shipping if partner_shipping != partner else None,
+                    company=company
+                )
+                if fiscal_position_id:
+                    fiscal_pos = self.env['account.fiscal.position'].browse(fiscal_position_id)
+                    _logger.info("✅ Fiscal position from CUSTOMER address: %s", fiscal_pos.name)
+                    return fiscal_pos
+            
+            _logger.warning("❌ No fiscal position found for any address")
+            return None
+                
+        except Exception as e:
+            _logger.error("Error determining fiscal position by invoice: %s", str(e))
+            return None
+    
     def _determine_fiscal_position(self, partner, partner_shipping, partner_invoice, company):
         """
         Determine the appropriate fiscal position using Odoo's built-in logic
@@ -306,15 +363,15 @@ class WkSkeleton(models.TransientModel):
         try:
             # Use Odoo's fiscal position determination logic
             # This considers country, country group, state, VAT, etc.
-            fiscal_position = self.env['account.fiscal.position'].get_fiscal_position(
-                company.id,
-                partner.id,
-                delivery_id=partner_shipping.id if partner_shipping != partner else None
+            fiscal_position_id = self.env['account.fiscal.position']._get_fiscal_position(
+                partner,
+                delivery=partner_shipping if partner_shipping != partner else None,
+                company=company
             )
             
-            if fiscal_position:
-                fiscal_pos = self.env['account.fiscal.position'].browse(fiscal_position)
-                _logger.info("✅ Determined fiscal position: %s (ID: %s)", fiscal_pos.name, fiscal_position)
+            if fiscal_position_id:
+                fiscal_pos = self.env['account.fiscal.position'].browse(fiscal_position_id)
+                _logger.info("✅ Determined fiscal position: %s (ID: %s)", fiscal_pos.name, fiscal_position_id)
                 return fiscal_pos
             else:
                 _logger.info("No fiscal position determined for customer")
