@@ -48,7 +48,8 @@ For any doubt or query email us at support@webkul.com or raise a Ticket on http:
     'sequence': 1,
     'data': [
         'views/connector_instance.xml',
-        'views/connector_product_mapping.xml'
+        'views/connector_product_mapping.xml',
+        'views/stock_location_view.xml'
     ],
     'installable': True,
     'application': True,

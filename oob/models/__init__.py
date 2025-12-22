@@ -17,3 +17,4 @@ from . import product
 from . import product_sync
 from . import wk_skeleton
 from . import stock_move
+from . import stock_location

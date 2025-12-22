@@ -47,20 +47,51 @@ class ConnectorSnippet(models.TransientModel):
         """
         quantity = 0.0
         config_id = self.env['connector.instance'].browse(instance_id)
-        ctx = self._context.copy() or {}
-        if not 'warehouse' in ctx:
-            ctx.update({
-                'warehouse': config_id.warehouse_id.id
-            })
-        # https://github.com/odoo/odoo/blob/14.0/addons/stock/models/product.py#L119
-        # qty = obj_pro.with_context(ctx)._product_available()
-        qty = obj_pro.with_context(ctx)._compute_quantities_dict(obj_pro._context.get('lot_id'), obj_pro._context.get(
-            'owner_id'), obj_pro._context.get('package_id'), obj_pro._context.get('from_date'), obj_pro._context.get('to_date'))
-        if config_id.connector_stock_action == "qoh":
-            quantity = qty[obj_pro.id]['qty_available'] - \
-                qty[obj_pro.id]['outgoing_qty']
+        
+        # Check if there are locations marked for OpenCart sync
+        sync_locations = self.env['stock.location'].search([('opencart_sync', '=', True)])
+        
+        if sync_locations:
+            # Sum quantities from all sync-enabled locations
+            total_quantity = 0.0
+            for location in sync_locations:
+                ctx = self._context.copy() or {}
+                ctx.update({'location': location.id})
+                
+                # Get quantity for this specific location
+                qty = obj_pro.with_context(ctx)._compute_quantities_dict(
+                    obj_pro._context.get('lot_id'), 
+                    obj_pro._context.get('owner_id'), 
+                    obj_pro._context.get('package_id'), 
+                    obj_pro._context.get('from_date'), 
+                    obj_pro._context.get('to_date')
+                )
+                
+                if config_id.connector_stock_action == "qoh":
+                    location_qty = qty[obj_pro.id]['qty_available'] - qty[obj_pro.id]['outgoing_qty']
+                else:
+                    location_qty = qty[obj_pro.id]['virtual_available']
+                    
+                total_quantity += location_qty
+                
+            quantity = total_quantity
         else:
-            quantity = qty[obj_pro.id]['virtual_available']
+            # Fallback to original single warehouse logic
+            ctx = self._context.copy() or {}
+            if not 'warehouse' in ctx:
+                ctx.update({
+                    'warehouse': config_id.warehouse_id.id
+                })
+            # https://github.com/odoo/odoo/blob/14.0/addons/stock/models/product.py#L119
+            # qty = obj_pro.with_context(ctx)._product_available()
+            qty = obj_pro.with_context(ctx)._compute_quantities_dict(obj_pro._context.get('lot_id'), obj_pro._context.get(
+                'owner_id'), obj_pro._context.get('package_id'), obj_pro._context.get('from_date'), obj_pro._context.get('to_date'))
+            if config_id.connector_stock_action == "qoh":
+                quantity = qty[obj_pro.id]['qty_available'] - \
+                    qty[obj_pro.id]['outgoing_qty']
+            else:
+                quantity = qty[obj_pro.id]['virtual_available']
+        
         if type(quantity) == str:
             quantity = quantity.split('.')[0]
         if type(quantity) == float:
