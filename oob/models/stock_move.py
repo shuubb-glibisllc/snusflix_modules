@@ -73,11 +73,25 @@ class StockMove(models.Model):
         check_mapping = product_pool.sudo().search(
             [('name', '=', erp_product_id)], limit=1)
         array = []
+        
+        # Check if there are any locations marked for OpenCart sync
+        sync_locations = self.env['stock.location'].search([('opencart_sync', '=', True)])
+        
         for map_obj in check_mapping:
             oc_product_id = map_obj.ecomm_id
             oc_option_id = map_obj.ecomm_option_id
             instance_id = map_obj.instance_id
-            if instance_id and warehouse_id == instance_id.warehouse_id.id:
+            
+            # Determine if we should sync: either the warehouse matches OR any sync location exists
+            should_sync = False
+            if sync_locations:
+                # If we have sync locations, always sync regardless of warehouse
+                should_sync = True
+            elif instance_id and warehouse_id == instance_id.warehouse_id.id:
+                # Fallback to original logic if no sync locations are configured
+                should_sync = True
+                
+            if instance_id and should_sync:
                 ctx.update({'instance_id': instance_id.id})
                 connection = self.env['connector.instance'].sudo(
                 ).with_context(ctx)._create_opencart_connection()
@@ -109,7 +123,7 @@ class StockMove(models.Model):
                             array.append([0, 'Stock Not Updated To Opencart'])
                     else:
                         array.append([0, 'Url Or Session Key Not Found'])
-        else:
+        if not array:
             array.append(
                 [0, 'Error in Updating Stock, Product Id %s not mapped.' % erp_product_id])
         return array
