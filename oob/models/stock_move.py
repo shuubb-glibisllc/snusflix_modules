@@ -17,6 +17,33 @@ _logger = logging.getLogger(__name__)
 class StockMove(models.Model):
     _inherit = "stock.move"
 
+    def fetch_stock_warehouse(self):
+        """Override to check for opencart_sync locations in addition to warehouse logic"""
+        ctx = dict(self._context or {})
+        if 'stock_from' not in ctx:
+            ecomm_cannels = dict(
+                self.env['connector.snippet']._get_ecomm_extensions()).keys()
+                
+            # Check if there are any locations marked for OpenCart sync
+            sync_locations = self.env['stock.location'].search([('opencart_sync', '=', True)])
+            
+            for data in self:
+                odoo_product_id = data.product_id.id
+                
+                # Check if this stock move involves any sync-enabled locations
+                locations_to_check = [data.location_id, data.location_dest_id]
+                sync_location_affected = any(loc.id in sync_locations.ids for loc in locations_to_check)
+                
+                if sync_location_affected:
+                    # If any sync location is affected, trigger OpenCart sync
+                    data.check_warehouse(odoo_product_id, 0, ecomm_cannels)
+                else:
+                    # Fall back to original bridge skeleton logic
+                    super(StockMove, self).fetch_stock_warehouse()
+                    break  # Avoid double processing
+                    
+        return True
+
     def opencart_update_bulk_stock(self, mapping_data, instance):
         ctx = self._context.copy() or {}
         array = []
@@ -87,7 +114,7 @@ class StockMove(models.Model):
             if sync_locations:
                 # If we have sync locations, always sync regardless of warehouse
                 should_sync = True
-            elif instance_id and warehouse_id == instance_id.warehouse_id.id:
+            elif instance_id and warehouse_id > 0 and warehouse_id == instance_id.warehouse_id.id:
                 # Fallback to original logic if no sync locations are configured
                 should_sync = True
                 
