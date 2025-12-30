@@ -401,6 +401,7 @@ class ConnectorSnippet(models.TransientModel):
                     prod_catg.append(oc_categ_id)
                 product_data['product_id'] = ecomm_product_id
                 product_data['sku'] = obj_pro.default_code or 'Ref Odoo %s' % obj_pro.id
+                product_data['model'] = obj_pro.default_code or 'Ref Odoo %s' % obj_pro.id
                 product_data['name'] = obj_pro.name
                 product_data['keyword'] = obj_pro.name
                 product_data['description'] = obj_pro.description or ' '
