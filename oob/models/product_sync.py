@@ -133,9 +133,11 @@ class ConnectorSnippet(models.TransientModel):
         try:
             param = json.dumps(put_product_data)
             resp = session.get_session_key(url + route, param)
-            _logger.debug("OpenCart product API response (first 500 chars): %s", str(resp.text)[:500])
+            _logger.info("OpenCart product API full response: %s", str(resp.text))
 
             resp = resp.json()
+            _logger.info("OpenCart parsed JSON response: %s", str(resp))
+            _logger.info("Response length: %s", len(resp))
 
             # Handle variable-length responses
             # Success: [message, product_data, true] - 3 elements
@@ -144,7 +146,7 @@ class ConnectorSnippet(models.TransientModel):
                 key = str(resp[0])
                 oc_id = resp[1]
                 status = resp[2]
-                _logger.info("OpenCart product creation response - Status: %s, Data: %s", status, oc_id)
+                _logger.info("OpenCart product creation response - Status: %s, Data: %s, Message: %s", status, oc_id, key)
 
                 if not status:
                     _logger.warning("Product creation failed for '%s': %s", product_name, key)
@@ -162,7 +164,9 @@ class ConnectorSnippet(models.TransientModel):
             _logger.error("Failed to create OpenCart product '%s': %s", product_name, str(e), exc_info=True)
             return [0, f"Error: {str(e)}"]
 
+        _logger.info("Status check for mapping creation - status type: %s, status value: %s", type(status), status)
         if status:
+            _logger.info("Status is truthy, creating mappings for product ID: %s", oc_id.get('product_id'))
             pro = oc_id
             self.create_odoo_connector_mapping(
                 'connector.template.mapping',
@@ -172,6 +176,7 @@ class ConnectorSnippet(models.TransientModel):
                 is_variants=is_variants,
                 name=int(put_product_data['erp_template_id'])
             )
+            _logger.info("Template mapping created successfully")
 
             if pro.get('merge_data'):
                 for k in pro['merge_data']:
