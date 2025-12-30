@@ -49,8 +49,18 @@ class ConnectorSnippet(models.TransientModel):
                     if variant_data and 'option_value_ids' in variant_data[1]:
                         is_variants = True
                 else:
-                    product_data['variant_id'] = str(
-                        obj_pro.product_variant_ids[0].id)
+                    # Safely get variant ID with error handling
+                    try:
+                        if obj_pro.product_variant_ids and obj_pro.product_variant_ids[0].exists():
+                            product_data['variant_id'] = str(obj_pro.product_variant_ids[0].id)
+                        else:
+                            _logger.error("Product template '%s' (ID: %s) has no valid variants for variant_id", 
+                                        obj_pro.name, obj_pro.id)
+                            return {'status': False, 'error': 'No valid product variants found'}
+                    except Exception as e:
+                        _logger.error("Error getting variant ID for product '%s' (ID: %s): %s", 
+                                    obj_pro.name, obj_pro.id, str(e))
+                        return {'status': False, 'error': f'Error accessing product variant: {str(e)}'}
 
                 prod_catg = []
                 for j in obj_pro.connector_categ_ids.categ_ids:
@@ -73,8 +83,19 @@ class ConnectorSnippet(models.TransientModel):
                 product_data['tag'] = obj_pro.name
                 product_data['ean'] = obj_pro.barcode or ' '
                 product_data['price'] = obj_pro.list_price or 0.00
-                product_data['quantity'] = self.env['connector.snippet'].get_quantity(
-                    obj_pro.product_variant_ids[0], instance_id)
+                # Safely get quantity from first variant with error handling
+                try:
+                    if obj_pro.product_variant_ids and obj_pro.product_variant_ids[0].exists():
+                        product_data['quantity'] = self.env['connector.snippet'].get_quantity(
+                            obj_pro.product_variant_ids[0], instance_id)
+                    else:
+                        _logger.warning("Product template '%s' (ID: %s) has no valid variants, setting quantity to 0", 
+                                      obj_pro.name, obj_pro.id)
+                        product_data['quantity'] = 0
+                except Exception as e:
+                    _logger.error("Error getting quantity for product '%s' (ID: %s): %s", 
+                                obj_pro.name, obj_pro.id, str(e))
+                    product_data['quantity'] = 0
                 product_data['weight'] = obj_pro.weight or 0.00
                 product_data['length'] = 0
                 product_data['width'] = 0
@@ -254,8 +275,18 @@ class ConnectorSnippet(models.TransientModel):
                         option_dic['value_ids'] = oc_attr_value_ids
                         product_option_data.append(option_dic)
             else:
-                product_data['variant_id'] = str(
-                    obj_pro.product_variant_ids.id)
+                # Safely get variant ID with error handling
+                try:
+                    if obj_pro.product_variant_ids and obj_pro.product_variant_ids[0].exists():
+                        product_data['variant_id'] = str(obj_pro.product_variant_ids[0].id)
+                    else:
+                        _logger.error("Product template '%s' (ID: %s) has no valid variants for variant_id", 
+                                    obj_pro.name, obj_pro.id)
+                        return {'status': False, 'error': 'No valid product variants found'}
+                except Exception as e:
+                    _logger.error("Error getting variant ID for product '%s' (ID: %s): %s", 
+                                obj_pro.name, obj_pro.id, str(e))
+                    return {'status': False, 'error': f'Error accessing product variant: {str(e)}'}
 
         if product_option_data:
             product_data['oc_options'] = product_option_data
@@ -328,8 +359,18 @@ class ConnectorSnippet(models.TransientModel):
                     else:
                         obj_pro_mapping.is_variants = False
                 else:
-                    product_data['variant_id'] = str(
-                        obj_pro.product_variant_ids[0].id)
+                    # Safely get variant ID with error handling
+                    try:
+                        if obj_pro.product_variant_ids and obj_pro.product_variant_ids[0].exists():
+                            product_data['variant_id'] = str(obj_pro.product_variant_ids[0].id)
+                        else:
+                            _logger.error("Product template '%s' (ID: %s) has no valid variants for variant_id", 
+                                        obj_pro.name, obj_pro.id)
+                            return {'status': False, 'error': 'No valid product variants found'}
+                    except Exception as e:
+                        _logger.error("Error getting variant ID for product '%s' (ID: %s): %s", 
+                                    obj_pro.name, obj_pro.id, str(e))
+                        return {'status': False, 'error': f'Error accessing product variant: {str(e)}'}
                 oc_categ_id = 0
                 prod_catg = []
                 for j in obj_pro.connector_categ_ids.categ_ids:
@@ -350,8 +391,19 @@ class ConnectorSnippet(models.TransientModel):
                 product_data['tag'] = obj_pro.name
                 product_data['ean'] = obj_pro.barcode or ' '
                 product_data['price'] = obj_pro.list_price or 0.00
-                product_data['quantity'] = self.env['connector.snippet'].get_quantity(
-                    obj_pro.product_variant_ids[0], instance_id)
+                # Safely get quantity from first variant with error handling
+                try:
+                    if obj_pro.product_variant_ids and obj_pro.product_variant_ids[0].exists():
+                        product_data['quantity'] = self.env['connector.snippet'].get_quantity(
+                            obj_pro.product_variant_ids[0], instance_id)
+                    else:
+                        _logger.warning("Product template '%s' (ID: %s) has no valid variants, setting quantity to 0", 
+                                      obj_pro.name, obj_pro.id)
+                        product_data['quantity'] = 0
+                except Exception as e:
+                    _logger.error("Error getting quantity for product '%s' (ID: %s): %s", 
+                                obj_pro.name, obj_pro.id, str(e))
+                    product_data['quantity'] = 0
                 product_data['weight'] = obj_pro.weight or 0.00
                 product_data['length'] = 0
                 product_data['width'] = 0

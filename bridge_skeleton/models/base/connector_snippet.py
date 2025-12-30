@@ -61,6 +61,24 @@ class ConnectorSnippet(models.TransientModel):
                         sync_opr, oprmodel, instance_id, channel)
             record_objs = self.env[model].browse(ctx.get('active_ids', [])) if ctx.get(
                 'active_model') == model else self.env[model].search(domain)
+            
+            # Filter out product templates with deleted/invalid variants
+            if model == 'product.template' and record_objs:
+                valid_record_objs = self.env[model]
+                for record in record_objs:
+                    try:
+                        # Test if the first product variant exists and is accessible
+                        if record.product_variant_ids and record.product_variant_ids[0].exists():
+                            valid_record_objs += record
+                        elif not record.product_variant_ids:
+                            # Template has no variants, which shouldn't happen but skip to be safe
+                            _logger.warning("Product template '%s' (ID: %s) has no product variants, skipping sync", 
+                                          record.name, record.id)
+                    except Exception as e:
+                        _logger.error("Product template '%s' (ID: %s) has invalid variants, skipping sync: %s", 
+                                    record.name if hasattr(record, 'name') else 'Unknown', record.id, str(e))
+                record_objs = valid_record_objs
+                        
             if record_objs:
                 display_message = ''
                 exup_record_objs, already_exup, not_exp = self.get_map_updt_objs(
