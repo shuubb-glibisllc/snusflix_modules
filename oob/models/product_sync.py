@@ -356,6 +356,9 @@ class ConnectorSnippet(models.TransientModel):
         obj_pro = obj_pro_mapping.name
         route = 'product'
         error = ''
+        # Initialize variant_data to prevent scope errors
+        variant_data = []
+        
         if obj_pro and session_key and opencart and url:
             try:
                 if obj_pro.attribute_line_ids:
@@ -363,7 +366,8 @@ class ConnectorSnippet(models.TransientModel):
                         obj_pro, instance_id)
                     if obj_pro.product_variant_count > 1:
                         variant_data = self.sync_variant(obj_pro, instance_id)
-                    if (variant_data[1].get('option_value_ids')):
+                    # Check if variant_data has elements before accessing
+                    if variant_data and len(variant_data) > 1 and variant_data[1].get('option_value_ids'):
                         obj_pro_mapping.is_variants = True
                         is_variants = True
                     else:

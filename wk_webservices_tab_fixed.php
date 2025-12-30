@@ -95,6 +95,8 @@ class ModelCatalogWkWebservicesTab extends Model {
 
             // Add product description for all languages
             $productName = "";
+            $created_languages = array();
+            
             foreach ($data['product_description'] as $language_id => $value) {
                 $productName = $value['name'];
                 $desc_sql = "INSERT INTO " . DB_PREFIX . "product_description SET " .
@@ -107,20 +109,48 @@ class ModelCatalogWkWebservicesTab extends Model {
                 
                 $this->logDebug("Inserting product description for language " . $language_id);
                 $this->db->query($desc_sql);
+                $created_languages[] = $language_id;
+            }
+            
+            // *** PERMANENT LANGUAGE FIX: Ensure Russian (language ID 1) description exists ***
+            $this->logDebug("=== AUTO-CREATING RUSSIAN DESCRIPTIONS FOR ADMIN UI ===");
+            $russian_language_id = 1; // Russian is language ID 1
+            
+            if (!in_array($russian_language_id, $created_languages)) {
+                $this->logDebug("Creating missing Russian description for product " . $product_id);
                 
-                // Also add for other active languages
-                $languages = $this->db->query("SELECT language_id FROM " . DB_PREFIX . "language WHERE status = 1")->rows;
-                foreach ($languages as $lang) {
-                    if ($lang['language_id'] != $language_id) {
-                        $desc_sql_lang = "INSERT INTO " . DB_PREFIX . "product_description SET " .
-                                        "product_id = '" . (int)$product_id . "', " .
-                                        "language_id = '" . (int)$lang['language_id'] . "', " .
-                                        "name = '" . $this->db->escape($value['name']) . "', " .
-                                        "meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', " .
-                                        "meta_description = '" . $this->db->escape($value['meta_description']) . "', " .
-                                        "description = '" . $this->db->escape($value['description']) . "'";
-                        $this->db->query($desc_sql_lang);
-                    }
+                // Use the first created description as template
+                if (!empty($created_languages) && !empty($productName)) {
+                    $russian_desc_sql = "INSERT INTO " . DB_PREFIX . "product_description SET " .
+                                       "product_id = '" . (int)$product_id . "', " .
+                                       "language_id = '" . (int)$russian_language_id . "', " .
+                                       "name = '" . $this->db->escape($productName) . "', " .
+                                       "meta_keyword = '', " .
+                                       "meta_description = '" . $this->db->escape($productName) . "', " .
+                                       "description = 'Product description'";
+                    
+                    $this->logDebug("Creating Russian description: " . $russian_desc_sql);
+                    $this->db->query($russian_desc_sql);
+                    $this->logDebug("✅ Russian description created - product will appear in admin UI mapping");
+                    $created_languages[] = $russian_language_id;
+                }
+            } else {
+                $this->logDebug("Russian description already exists, admin UI mapping will work");
+            }
+            
+            // Add descriptions for all other active languages (existing logic)
+            $languages = $this->db->query("SELECT language_id FROM " . DB_PREFIX . "language WHERE status = 1")->rows;
+            foreach ($languages as $lang) {
+                if (!in_array($lang['language_id'], $created_languages)) {
+                    $desc_sql_lang = "INSERT INTO " . DB_PREFIX . "product_description SET " .
+                                    "product_id = '" . (int)$product_id . "', " .
+                                    "language_id = '" . (int)$lang['language_id'] . "', " .
+                                    "name = '" . $this->db->escape($productName) . "', " .
+                                    "meta_keyword = '', " .
+                                    "meta_description = '" . $this->db->escape($productName) . "', " .
+                                    "description = 'Product description'";
+                    $this->db->query($desc_sql_lang);
+                    $this->logDebug("Added description for language " . $lang['language_id']);
                 }
             }
 
