@@ -211,15 +211,25 @@ class ConnectorSnippet(models.TransientModel):
                         name=int(k)
                     )
             elif put_product_data.get('variant_id'):
-                self.create_odoo_connector_mapping(
-                    'connector.product.mapping',
-                    pro['product_id'],
-                    put_product_data['variant_id'],
-                    instance_id,
-                    odoo_tmpl_id=put_product_data['erp_template_id'],
-                    ecomm_option_id=0,
-                    name=put_product_data['variant_id']
-                )
+                try:
+                    variant_id = int(put_product_data['variant_id'])
+                    # Verify the product variant exists before creating mapping
+                    product_variant = self.env['product.product'].browse(variant_id)
+                    if product_variant.exists():
+                        self.create_odoo_connector_mapping(
+                            'connector.product.mapping',
+                            pro['product_id'],
+                            variant_id,
+                            instance_id,
+                            odoo_tmpl_id=put_product_data['erp_template_id'],
+                            ecomm_option_id=0,
+                            name=variant_id
+                        )
+                        _logger.info("Product mapping created successfully for variant ID: %s", variant_id)
+                    else:
+                        _logger.warning("Product variant ID %s does not exist, skipping product mapping creation", variant_id)
+                except (ValueError, TypeError) as e:
+                    _logger.error("Invalid variant_id '%s' for product mapping: %s", put_product_data.get('variant_id'), str(e))
 
             return [1, pro['product_id']]
 

@@ -7,7 +7,10 @@
 #
 ##########################################################################
 
+import logging
 from odoo import api, models, fields
+
+_logger = logging.getLogger(__name__)
 
 
 class ConnectorSnippet(models.TransientModel):
@@ -28,14 +31,22 @@ class ConnectorSnippet(models.TransientModel):
     @api.model
     def create_opencart_connector_odoo_mapping(self, mapping_data, model):
         if model == 'connector.product.mapping':
-            template_id = self.env['product.product'].browse(
-                mapping_data.get('odoo_id')).product_tmpl_id.id
-            ecomm_combination_id = self._context.get('ecomm_option_id', 0)
-            if template_id and not mapping_data.get('ecomm_option_id'):
-                mapping_data.update({
-                    'odoo_tmpl_id': template_id,
-                    'ecomm_option_id': ecomm_combination_id
-                })
+            try:
+                product_obj = self.env['product.product'].browse(mapping_data.get('odoo_id'))
+                if product_obj.exists():
+                    template_id = product_obj.product_tmpl_id.id
+                    ecomm_combination_id = self._context.get('ecomm_option_id', 0)
+                    if template_id and not mapping_data.get('ecomm_option_id'):
+                        mapping_data.update({
+                            'odoo_tmpl_id': template_id,
+                            'ecomm_option_id': ecomm_combination_id
+                        })
+                else:
+                    _logger.error("Product with ID %s does not exist, skipping mapping creation", 
+                                mapping_data.get('odoo_id'))
+            except Exception as e:
+                _logger.error("Error creating OpenCart mapping for product ID %s: %s", 
+                            mapping_data.get('odoo_id'), str(e))
         return mapping_data
 
     @api.model
