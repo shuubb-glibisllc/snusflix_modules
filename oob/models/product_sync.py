@@ -82,6 +82,10 @@ class ConnectorSnippet(models.TransientModel):
                 product_data['meta_description'] = obj_pro.description or obj_pro.name
                 product_data['tag'] = obj_pro.name
                 product_data['ean'] = obj_pro.barcode or ' '
+                product_data['upc'] = obj_pro.barcode or ' '  # OpenCart barcode field
+                product_data['jan'] = obj_pro.barcode or ' '  # Additional barcode field
+                product_data['isbn'] = obj_pro.barcode or ' '  # Additional barcode field
+                product_data['mpn'] = obj_pro.barcode or ' '   # Manufacturer Part Number field
                 product_data['price'] = obj_pro.list_price or 0.00
                 # Safely get quantity from first variant with error handling
                 try:
@@ -404,6 +408,10 @@ class ConnectorSnippet(models.TransientModel):
                 product_data['meta_description'] = obj_pro.description or obj_pro.name
                 product_data['tag'] = obj_pro.name
                 product_data['ean'] = obj_pro.barcode or ' '
+                product_data['upc'] = obj_pro.barcode or ' '  # OpenCart barcode field
+                product_data['jan'] = obj_pro.barcode or ' '  # Additional barcode field
+                product_data['isbn'] = obj_pro.barcode or ' '  # Additional barcode field
+                product_data['mpn'] = obj_pro.barcode or ' '   # Manufacturer Part Number field
                 product_data['price'] = obj_pro.list_price or 0.00
                 # Safely get quantity from first variant with error handling
                 try:

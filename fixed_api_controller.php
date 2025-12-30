@@ -131,6 +131,11 @@ class ControllerApiOob extends Controller {
                             $data = array(
                                 'model' => $params['model'] ?? '',
                                 'sku' => $params['sku'] ?? '',
+                                'upc' => $params['upc'] ?? '',  // Barcode field
+                                'ean' => $params['ean'] ?? '',  // EAN field
+                                'jan' => $params['jan'] ?? '',  // JAN field
+                                'isbn' => $params['isbn'] ?? '',  // ISBN field
+                                'mpn' => $params['mpn'] ?? '',  // MPN field
                                 'quantity' => (int)($params['quantity'] ?? 0),
                                 'price' => (float)($params['price'] ?? 0),
                                 'weight' => (float)($params['weight'] ?? 0),
@@ -206,6 +211,11 @@ class ControllerApiOob extends Controller {
                         $data = array(
                             'model' => $params['model'] ?? 'Model-' . time(),
                             'sku' => $params['sku'] ?? '',
+                            'upc' => $params['upc'] ?? '',  // Barcode field
+                            'ean' => $params['ean'] ?? '',  // EAN field
+                            'jan' => $params['jan'] ?? '',  // JAN field
+                            'isbn' => $params['isbn'] ?? '',  // ISBN field
+                            'mpn' => $params['mpn'] ?? '',  // MPN field
                             'location' => '',
                             'quantity' => (int)($params['quantity'] ?? 0),
                             'minimum' => 1,
