@@ -1,0 +1,237 @@
+Test entry: 2025-12-30 18:53:06
+2025-12-30 20:53:41 [API] === PRODUCT API CALLED ===
+2025-12-30 20:53:41 [API] Received data: {"variant_id":"1116","sku":"Ref Odoo 1116","model":"Ref Odoo 1116","name":"TEEEEEEST","keyword":"TEEEEEEST","description":" ","meta_keyword":"TEEEEEEST","meta_description":"TEEEEEEST","tag":"TEEEEEEST","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1116,"product_category":[523,573],"erp_template_id":1116,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 20:53:41 [API] Creating new product
+2025-12-30 20:53:41 [API] Calling addProduct with data
+2025-12-30 20:53:41 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 20:53:41 [MODEL] Data received: {"model":"Ref Odoo 1116","sku":"Ref Odoo 1116","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1116,"erp_template_id":1116,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523,573]}
+2025-12-30 20:53:41 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1116', sku = 'Ref Odoo 1116', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 20:53:41 [MODEL] Product inserted with ID: 2957
+2025-12-30 20:53:41 [MODEL] Product descriptions inserted
+2025-12-30 20:53:41 [MODEL] Store associations created
+2025-12-30 20:53:41 [MODEL] Category associations created for 2 categories
+2025-12-30 20:53:41 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1116', opencart_product_id = '2957', created_by = 'Sync Fix Script'
+2025-12-30 20:53:41 [MODEL] ERP template mapping created: Product 2957 <-> Template 1116
+2025-12-30 20:53:41 [MODEL] Transaction committed successfully
+2025-12-30 20:53:41 [API] SUCCESS: Product created with ID 2957
+2025-12-30 20:53:41 [API] API Response: ["Product successfully added. Product Id: 2957",{"product_id":2957,"merge_data":[]},true]
+2025-12-30 20:54:36 [API] === PRODUCT API CALLED ===
+2025-12-30 20:54:36 [API] Received data: {"variant_id":"1116","sku":"Ref Odoo 1116","model":"Ref Odoo 1116","name":"TEEEEEEST","keyword":"TEEEEEEST","description":" ","meta_keyword":"TEEEEEEST","meta_description":"TEEEEEEST","tag":"TEEEEEEST","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1116,"product_category":[523,573],"erp_template_id":1116,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 20:54:36 [API] Creating new product
+2025-12-30 20:54:36 [API] Calling addProduct with data
+2025-12-30 20:54:36 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 20:54:36 [MODEL] Data received: {"model":"Ref Odoo 1116","sku":"Ref Odoo 1116","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1116,"erp_template_id":1116,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523,573]}
+2025-12-30 20:54:36 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1116', sku = 'Ref Odoo 1116', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 20:54:36 [MODEL] Product inserted with ID: 2958
+2025-12-30 20:54:36 [MODEL] Product descriptions inserted
+2025-12-30 20:54:36 [MODEL] Store associations created
+2025-12-30 20:54:36 [MODEL] Category associations created for 2 categories
+2025-12-30 20:54:36 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1116', opencart_product_id = '2958', created_by = 'Sync Fix Script'
+2025-12-30 20:54:36 [MODEL] ERP template mapping created: Product 2958 <-> Template 1116
+2025-12-30 20:54:36 [MODEL] Transaction committed successfully
+2025-12-30 20:54:36 [API] SUCCESS: Product created with ID 2958
+2025-12-30 20:54:36 [API] API Response: ["Product successfully added. Product Id: 2958",{"product_id":2958,"merge_data":[]},true]
+2025-12-30 20:54:51 [API] === PRODUCT API CALLED ===
+2025-12-30 20:54:51 [API] Received data: {"variant_id":"1116","sku":"Ref Odoo 1116","model":"Ref Odoo 1116","name":"TEEEEEEST","keyword":"TEEEEEEST","description":" ","meta_keyword":"TEEEEEEST","meta_description":"TEEEEEEST","tag":"TEEEEEEST","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1116,"product_category":[523,573],"erp_template_id":1116,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 20:54:51 [API] Creating new product
+2025-12-30 20:54:51 [API] Calling addProduct with data
+2025-12-30 20:54:51 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 20:54:51 [MODEL] Data received: {"model":"Ref Odoo 1116","sku":"Ref Odoo 1116","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1116,"erp_template_id":1116,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523,573]}
+2025-12-30 20:54:51 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1116', sku = 'Ref Odoo 1116', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 20:54:51 [MODEL] Product inserted with ID: 2959
+2025-12-30 20:54:51 [MODEL] Product descriptions inserted
+2025-12-30 20:54:51 [MODEL] Store associations created
+2025-12-30 20:54:51 [MODEL] Category associations created for 2 categories
+2025-12-30 20:54:51 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1116', opencart_product_id = '2959', created_by = 'Sync Fix Script'
+2025-12-30 20:54:51 [MODEL] ERP template mapping created: Product 2959 <-> Template 1116
+2025-12-30 20:54:51 [MODEL] Transaction committed successfully
+2025-12-30 20:54:51 [API] SUCCESS: Product created with ID 2959
+2025-12-30 20:54:51 [API] API Response: ["Product successfully added. Product Id: 2959",{"product_id":2959,"merge_data":[]},true]
+2025-12-30 21:01:22 [API] === PRODUCT API CALLED ===
+2025-12-30 21:01:22 [API] Received data: {"variant_id":"1117","sku":"Ref Odoo 1117","model":"Ref Odoo 1117","name":"TEEEEEEST (copy)","keyword":"TEEEEEEST (copy)","description":" ","meta_keyword":"TEEEEEEST (copy)","meta_description":"TEEEEEEST (copy)","tag":"TEEEEEEST (copy)","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1117,"product_category":[523],"erp_template_id":1117,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 21:01:22 [API] Creating new product
+2025-12-30 21:01:22 [API] Calling addProduct with data
+2025-12-30 21:01:22 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 21:01:22 [MODEL] Data received: {"model":"Ref Odoo 1117","sku":"Ref Odoo 1117","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1117,"erp_template_id":1117,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST (copy)","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523]}
+2025-12-30 21:01:22 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1117', sku = 'Ref Odoo 1117', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 21:01:22 [MODEL] Product inserted with ID: 2960
+2025-12-30 21:01:22 [MODEL] Product descriptions inserted
+2025-12-30 21:01:22 [MODEL] Store associations created
+2025-12-30 21:01:22 [MODEL] Category associations created for 1 categories
+2025-12-30 21:01:22 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1117', opencart_product_id = '2960', created_by = 'Sync Fix Script'
+2025-12-30 21:01:22 [MODEL] ERP template mapping created: Product 2960 <-> Template 1117
+2025-12-30 21:01:22 [MODEL] Transaction committed successfully
+2025-12-30 21:01:22 [API] SUCCESS: Product created with ID 2960
+2025-12-30 21:01:22 [API] API Response: ["Product successfully added. Product Id: 2960",{"product_id":2960,"merge_data":[]},true]
+2025-12-30 21:06:23 [API] === PRODUCT API CALLED ===
+2025-12-30 21:06:23 [API] Received data: {"variant_id":"1116","sku":"Ref Odoo 1116","model":"Ref Odoo 1116","name":"TEEEEEEST","keyword":"TEEEEEEST","description":" ","meta_keyword":"TEEEEEEST","meta_description":"TEEEEEEST","tag":"TEEEEEEST","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1116,"product_category":[523,573],"erp_template_id":1116,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 21:06:23 [API] Creating new product
+2025-12-30 21:06:23 [API] Calling addProduct with data
+2025-12-30 21:06:23 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 21:06:23 [MODEL] Data received: {"model":"Ref Odoo 1116","sku":"Ref Odoo 1116","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1116,"erp_template_id":1116,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523,573]}
+2025-12-30 21:06:23 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1116', sku = 'Ref Odoo 1116', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 21:06:23 [MODEL] Product inserted with ID: 2961
+2025-12-30 21:06:23 [MODEL] Product descriptions inserted
+2025-12-30 21:06:23 [MODEL] Store associations created
+2025-12-30 21:06:23 [MODEL] Category associations created for 2 categories
+2025-12-30 21:06:23 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1116', opencart_product_id = '2961', created_by = 'Sync Fix Script'
+2025-12-30 21:06:23 [MODEL] ERP template mapping created: Product 2961 <-> Template 1116
+2025-12-30 21:06:23 [MODEL] Transaction committed successfully
+2025-12-30 21:06:23 [API] SUCCESS: Product created with ID 2961
+2025-12-30 21:06:23 [API] API Response: ["Product successfully added. Product Id: 2961",{"product_id":2961,"merge_data":[]},true]
+2025-12-30 21:07:00 [API] === PRODUCT API CALLED ===
+2025-12-30 21:07:00 [API] Received data: {"variant_id":"1116","sku":"Ref Odoo 1116","model":"Ref Odoo 1116","name":"TEEEEEEST","keyword":"TEEEEEEST","description":" ","meta_keyword":"TEEEEEEST","meta_description":"TEEEEEEST","tag":"TEEEEEEST","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1116,"product_category":[523,573],"erp_template_id":1116,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 21:07:00 [API] Creating new product
+2025-12-30 21:07:00 [API] Calling addProduct with data
+2025-12-30 21:07:00 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 21:07:00 [MODEL] Data received: {"model":"Ref Odoo 1116","sku":"Ref Odoo 1116","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1116,"erp_template_id":1116,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523,573]}
+2025-12-30 21:07:00 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1116', sku = 'Ref Odoo 1116', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 21:07:00 [MODEL] Product inserted with ID: 2962
+2025-12-30 21:07:00 [MODEL] Product descriptions inserted
+2025-12-30 21:07:00 [MODEL] Store associations created
+2025-12-30 21:07:00 [MODEL] Category associations created for 2 categories
+2025-12-30 21:07:00 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1116', opencart_product_id = '2962', created_by = 'Sync Fix Script'
+2025-12-30 21:07:00 [MODEL] ERP template mapping created: Product 2962 <-> Template 1116
+2025-12-30 21:07:00 [MODEL] Transaction committed successfully
+2025-12-30 21:07:00 [API] SUCCESS: Product created with ID 2962
+2025-12-30 21:07:00 [API] API Response: ["Product successfully added. Product Id: 2962",{"product_id":2962,"merge_data":[]},true]
+2025-12-30 21:12:54 [API] === PRODUCT API CALLED ===
+2025-12-30 21:12:54 [API] Received data: {"variant_id":"1116","sku":"Ref Odoo 1116","model":"Ref Odoo 1116","name":"TEEEEEEST","keyword":"TEEEEEEST","description":" ","meta_keyword":"TEEEEEEST","meta_description":"TEEEEEEST","tag":"TEEEEEEST","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1116,"product_category":[523,573],"erp_template_id":1116,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 21:12:54 [API] Creating new product
+2025-12-30 21:12:54 [API] Calling addProduct with data
+2025-12-30 21:12:54 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 21:12:54 [MODEL] Data received: {"model":"Ref Odoo 1116","sku":"Ref Odoo 1116","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1116,"erp_template_id":1116,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523,573]}
+2025-12-30 21:12:54 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1116', sku = 'Ref Odoo 1116', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 21:12:54 [MODEL] Product inserted with ID: 2963
+2025-12-30 21:12:54 [MODEL] Product descriptions inserted
+2025-12-30 21:12:54 [MODEL] Store associations created
+2025-12-30 21:12:54 [MODEL] Category associations created for 2 categories
+2025-12-30 21:12:54 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1116', opencart_product_id = '2963', created_by = 'Sync Fix Script'
+2025-12-30 21:12:54 [MODEL] ERP template mapping created: Product 2963 <-> Template 1116
+2025-12-30 21:12:54 [MODEL] Transaction committed successfully
+2025-12-30 21:12:54 [API] SUCCESS: Product created with ID 2963
+2025-12-30 21:12:54 [API] API Response: ["Product successfully added. Product Id: 2963",{"product_id":2963,"merge_data":[]},true]
+2025-12-30 21:13:32 [API] === PRODUCT API CALLED ===
+2025-12-30 21:13:32 [API] Received data: {"variant_id":"1116","sku":"Ref Odoo 1116","model":"Ref Odoo 1116","name":"TEEEEEEST","keyword":"TEEEEEEST","description":" ","meta_keyword":"TEEEEEEST","meta_description":"TEEEEEEST","tag":"TEEEEEEST","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1116,"product_category":[523,573],"erp_template_id":1116,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 21:13:32 [API] Creating new product
+2025-12-30 21:13:32 [API] Calling addProduct with data
+2025-12-30 21:13:32 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 21:13:32 [MODEL] Data received: {"model":"Ref Odoo 1116","sku":"Ref Odoo 1116","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1116,"erp_template_id":1116,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523,573]}
+2025-12-30 21:13:32 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1116', sku = 'Ref Odoo 1116', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 21:13:32 [MODEL] Product inserted with ID: 2964
+2025-12-30 21:13:32 [MODEL] Product descriptions inserted
+2025-12-30 21:13:32 [MODEL] Store associations created
+2025-12-30 21:13:32 [MODEL] Category associations created for 2 categories
+2025-12-30 21:13:32 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1116', opencart_product_id = '2964', created_by = 'Sync Fix Script'
+2025-12-30 21:13:32 [MODEL] ERP template mapping created: Product 2964 <-> Template 1116
+2025-12-30 21:13:32 [MODEL] Transaction committed successfully
+2025-12-30 21:13:32 [API] SUCCESS: Product created with ID 2964
+2025-12-30 21:13:32 [API] API Response: ["Product successfully added. Product Id: 2964",{"product_id":2964,"merge_data":[]},true]
+2025-12-30 22:13:40 [API] === PRODUCT API CALLED ===
+2025-12-30 22:13:40 [API] Received data: {"variant_id":"1116","sku":"Ref Odoo 1116","model":"Ref Odoo 1116","name":"TEEEEEEST","keyword":"TEEEEEEST","description":" ","meta_keyword":"TEEEEEEST","meta_description":"TEEEEEEST","tag":"TEEEEEEST","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1116,"product_category":[523,573],"erp_template_id":1116,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 22:13:40 [API] Creating new product
+2025-12-30 22:13:40 [API] Calling addProduct with data
+2025-12-30 22:13:40 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 22:13:40 [MODEL] Data received: {"model":"Ref Odoo 1116","sku":"Ref Odoo 1116","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1116,"erp_template_id":1116,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523,573]}
+2025-12-30 22:13:40 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1116', sku = 'Ref Odoo 1116', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 22:13:40 [MODEL] Product inserted with ID: 2965
+2025-12-30 22:13:40 [MODEL] Product descriptions inserted
+2025-12-30 22:13:40 [MODEL] Store associations created
+2025-12-30 22:13:40 [MODEL] Category associations created for 2 categories
+2025-12-30 22:13:40 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1116', opencart_product_id = '2965', created_by = 'Sync Fix Script'
+2025-12-30 22:13:40 [MODEL] ERP template mapping created: Product 2965 <-> Template 1116
+2025-12-30 22:13:40 [MODEL] Transaction committed successfully
+2025-12-30 22:13:40 [API] SUCCESS: Product created with ID 2965
+2025-12-30 22:13:40 [API] API Response: ["Product successfully added. Product Id: 2965",{"product_id":2965,"merge_data":[]},true]
+2025-12-30 23:10:53 [API] === PRODUCT API CALLED ===
+2025-12-30 23:10:53 [API] Received data: {"variant_id":"1116","sku":"Ref Odoo 1116","model":"Ref Odoo 1116","name":"TEEEEEEST","keyword":"TEEEEEEST","description":" ","meta_keyword":"TEEEEEEST","meta_description":"TEEEEEEST","tag":"TEEEEEEST","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1116,"product_category":[523,573],"erp_template_id":1116,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 23:10:53 [API] Creating new product
+2025-12-30 23:10:53 [API] Calling addProduct with data
+2025-12-30 23:10:53 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 23:10:53 [MODEL] Data received: {"model":"Ref Odoo 1116","sku":"Ref Odoo 1116","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1116,"erp_template_id":1116,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523,573]}
+2025-12-30 23:10:53 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1116', sku = 'Ref Odoo 1116', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 23:10:53 [MODEL] Product inserted with ID: 2966
+2025-12-30 23:10:53 [MODEL] Product descriptions inserted
+2025-12-30 23:10:53 [MODEL] Store associations created
+2025-12-30 23:10:53 [MODEL] Category associations created for 2 categories
+2025-12-30 23:10:53 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1116', opencart_product_id = '2966', created_by = 'Sync Fix Script'
+2025-12-30 23:10:53 [MODEL] ERP template mapping created: Product 2966 <-> Template 1116
+2025-12-30 23:10:53 [MODEL] Transaction committed successfully
+2025-12-30 23:10:53 [API] SUCCESS: Product created with ID 2966
+2025-12-30 23:10:53 [API] API Response: ["Product successfully added. Product Id: 2966",{"product_id":2966,"merge_data":[]},true]
+2025-12-30 23:13:21 [API] === PRODUCT API CALLED ===
+2025-12-30 23:13:21 [API] Received data: {"variant_id":"1116","sku":"Ref Odoo 1116","model":"Ref Odoo 1116","name":"TEEEEEEST","keyword":"TEEEEEEST","description":" ","meta_keyword":"TEEEEEEST","meta_description":"TEEEEEEST","tag":"TEEEEEEST","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1116,"product_category":[523,573],"erp_template_id":1116,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 23:13:21 [API] Creating new product
+2025-12-30 23:13:21 [API] Calling addProduct with data
+2025-12-30 23:13:21 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 23:13:21 [MODEL] Data received: {"model":"Ref Odoo 1116","sku":"Ref Odoo 1116","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1116,"erp_template_id":1116,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523,573]}
+2025-12-30 23:13:21 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1116', sku = 'Ref Odoo 1116', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 23:13:21 [MODEL] Product inserted with ID: 2967
+2025-12-30 23:13:21 [MODEL] Product descriptions inserted
+2025-12-30 23:13:21 [MODEL] Store associations created
+2025-12-30 23:13:21 [MODEL] Category associations created for 2 categories
+2025-12-30 23:13:21 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1116', opencart_product_id = '2967', created_by = 'Sync Fix Script'
+2025-12-30 23:13:21 [MODEL] ERP template mapping created: Product 2967 <-> Template 1116
+2025-12-30 23:13:21 [MODEL] Transaction committed successfully
+2025-12-30 23:13:21 [API] SUCCESS: Product created with ID 2967
+2025-12-30 23:13:21 [API] API Response: ["Product successfully added. Product Id: 2967",{"product_id":2967,"merge_data":[]},true]
+2025-12-30 23:14:12 [API] === PRODUCT API CALLED ===
+2025-12-30 23:14:12 [API] Received data: {"variant_id":"1118","sku":"Ref Odoo 1118","model":"Ref Odoo 1118","name":"TEEEEEEST2","keyword":"TEEEEEEST2","description":" ","meta_keyword":"TEEEEEEST2","meta_description":"TEEEEEEST2","tag":"TEEEEEEST2","ean":" ","price":1,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1118,"product_category":[523],"erp_template_id":1118,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 23:14:12 [API] Creating new product
+2025-12-30 23:14:12 [API] Calling addProduct with data
+2025-12-30 23:14:12 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 23:14:12 [MODEL] Data received: {"model":"Ref Odoo 1118","sku":"Ref Odoo 1118","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":1,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1118,"erp_template_id":1118,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST2","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523]}
+2025-12-30 23:14:12 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1118', sku = 'Ref Odoo 1118', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '1', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 23:14:12 [MODEL] Product inserted with ID: 2968
+2025-12-30 23:14:12 [MODEL] Product descriptions inserted
+2025-12-30 23:14:12 [MODEL] Store associations created
+2025-12-30 23:14:12 [MODEL] Category associations created for 1 categories
+2025-12-30 23:14:12 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1118', opencart_product_id = '2968', created_by = 'Sync Fix Script'
+2025-12-30 23:14:12 [MODEL] ERP template mapping created: Product 2968 <-> Template 1118
+2025-12-30 23:14:12 [MODEL] Transaction committed successfully
+2025-12-30 23:14:12 [API] SUCCESS: Product created with ID 2968
+2025-12-30 23:14:12 [API] API Response: ["Product successfully added. Product Id: 2968",{"product_id":2968,"merge_data":[]},true]
+2025-12-30 23:27:08 [API] === PRODUCT API CALLED ===
+2025-12-30 23:27:08 [API] Received data: {"variant_id":"1119","sku":"Ref Odoo 1119","model":"Ref Odoo 1119","name":"TEEEEEEST3","keyword":"TEEEEEEST3","description":" ","meta_keyword":"TEEEEEEST3","meta_description":"TEEEEEEST3","tag":"TEEEEEEST3","ean":" ","price":6,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1119,"product_category":[523],"erp_template_id":1119,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 23:27:08 [API] Creating new product
+2025-12-30 23:27:08 [API] Calling addProduct with data
+2025-12-30 23:27:08 [MODEL] === STARTING PRODUCT CREATION ===
+2025-12-30 23:27:08 [MODEL] Data received: {"model":"Ref Odoo 1119","sku":"Ref Odoo 1119","location":"","quantity":0,"minimum":1,"subtract":1,"stock_status_id":5,"date_available":"2025-12-30","manufacturer_id":0,"shipping":1,"price":6,"points":0,"weight":0,"weight_class_id":1,"length":0,"width":0,"height":0,"length_class_id":1,"status":1,"tax_class_id":0,"sort_order":0,"erp_product_id":1119,"erp_template_id":1119,"created_by":"Sync Fix Script","product_description":{"5":{"name":"TEEEEEEST3","description":" ","meta_keyword":"","meta_description":"","tag":""}},"product_store":[0],"product_category":[523]}
+2025-12-30 23:27:08 [MODEL] Inserting product with SQL: INSERT INTO oc_product SET model = 'Ref Odoo 1119', sku = 'Ref Odoo 1119', location = '', quantity = '0', minimum = '1', subtract = '1', stock_status_id = '5', date_available = '2025-12-30', manufacturer_id = '0', shipping = '1', price = '6', points = '0', weight = '0', weight_class_id = '1', length = '0', width = '0', height = '0', length_class_id = '1', status = '1', tax_class_id = '0', sort_order = '0', date_added = NOW()
+2025-12-30 23:27:08 [MODEL] Product inserted with ID: 2969
+2025-12-30 23:27:08 [MODEL] Product descriptions inserted
+2025-12-30 23:27:08 [MODEL] Store associations created
+2025-12-30 23:27:08 [MODEL] Category associations created for 1 categories
+2025-12-30 23:27:08 [MODEL] Creating ERP mapping: INSERT INTO oc_erp_product_template_merge SET erp_template_id = '1119', opencart_product_id = '2969', created_by = 'Sync Fix Script'
+2025-12-30 23:27:08 [MODEL] ERP template mapping created: Product 2969 <-> Template 1119
+2025-12-30 23:27:08 [MODEL] Transaction committed successfully
+2025-12-30 23:27:08 [API] SUCCESS: Product created with ID 2969
+2025-12-30 23:27:08 [API] API Response: ["Product successfully added. Product Id: 2969",{"product_id":2969,"merge_data":[]},true]
+2025-12-30 23:36:31 [API] === PRODUCT API CALLED ===
+2025-12-30 23:36:31 [API] Received data: {"variant_id":"1120","sku":"Ref Odoo 1120","model":"Ref Odoo 1120","name":"TEEEEEEST4","keyword":"TEEEEEEST4","description":" ","meta_keyword":"TEEEEEEST4","meta_description":"TEEEEEEST4","tag":"TEEEEEEST4","ean":" ","price":6,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1120,"product_category":[523],"erp_template_id":1120,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 23:36:31 [API] Creating new product
+2025-12-30 23:36:31 [API] Calling addProduct with data
+2025-12-30 23:36:31 [API] SUCCESS: Product created with ID 2970
+2025-12-30 23:36:31 [API] API Response: ["Product successfully added. Product Id: 2970",{"product_id":2970,"merge_data":[]},true]
+2025-12-30 23:37:22 [API] === PRODUCT API CALLED ===
+2025-12-30 23:37:22 [API] Received data: {"variant_id":"1121","sku":"Ref Odoo 1121","model":"Ref Odoo 1121","name":"TEEEEEEST5","keyword":"TEEEEEEST5","description":"<div data-oe-version=\"1.2\">hello<\/div>","meta_keyword":"TEEEEEEST5","meta_description":"<div data-oe-version=\"1.2\">hello<\/div>","tag":"TEEEEEEST5","ean":" ","price":6,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1121,"product_category":[523],"erp_template_id":1121,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 23:37:22 [API] Creating new product
+2025-12-30 23:37:22 [API] Calling addProduct with data
+2025-12-30 23:37:22 [API] SUCCESS: Product created with ID 2971
+2025-12-30 23:37:22 [API] API Response: ["Product successfully added. Product Id: 2971",{"product_id":2971,"merge_data":[]},true]
+2025-12-30 23:45:58 [API] === PRODUCT API CALLED ===
+2025-12-30 23:45:58 [API] Received data: {"variant_id":"1122","sku":"Ref Odoo 1122","model":"Ref Odoo 1122","name":"TEEEEEEST6","keyword":"TEEEEEEST6","description":"<div data-oe-version=\"1.2\">hello<\/div>","meta_keyword":"TEEEEEEST6","meta_description":"<div data-oe-version=\"1.2\">hello<\/div>","tag":"TEEEEEEST6","ean":" ","price":3,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1122,"product_category":[523],"erp_template_id":1122,"product_image":false,"minimum":"1","subtract":"1","product_variant_count":1,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-30 23:45:58 [API] Creating new product
+2025-12-30 23:45:58 [API] Calling addProduct with data
+2025-12-30 23:45:58 [API] SUCCESS: Product created with ID 2972
+2025-12-30 23:45:58 [API] API Response: ["Product successfully added. Product Id: 2972",{"product_id":2972,"merge_data":[]},true]
+2025-12-31 00:38:56 [API] === PRODUCT API CALLED ===
+2025-12-31 00:38:56 [API] Received data: {"variant_id":"1121","product_id":2971,"sku":"Ref Odoo 1121","name":"TEEEEEEST5","keyword":"TEEEEEEST5","description":"<div data-oe-version=\"1.2\">hello<\/div>","meta_keyword":"TEEEEEEST5","meta_description":"<div data-oe-version=\"1.2\">hello<\/div>","tag":"TEEEEEEST5","ean":" ","price":5,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1121,"product_category":[523],"erp_template_id":1121,"product_image":false,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-31 00:39:20 [API] === PRODUCT API CALLED ===
+2025-12-31 00:39:20 [API] Received data: {"variant_id":"1121","product_id":2971,"sku":"Ref Odoo 1121","name":"TEEEEEEST5","keyword":"TEEEEEEST5","description":"<div data-oe-version=\"1.2\">hello<\/div>","meta_keyword":"TEEEEEEST5","meta_description":"<div data-oe-version=\"1.2\">hello<\/div>","tag":"TEEEEEEST5","ean":" ","price":5,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1121,"product_category":[523],"erp_template_id":1121,"product_image":false,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-31 00:44:47 [API] === PRODUCT API CALLED ===
+2025-12-31 00:44:47 [API] Received data: {"variant_id":"1121","product_id":2971,"sku":"Ref Odoo 1121","name":"TEEEEEEST5","keyword":"TEEEEEEST5","description":"<div data-oe-version=\"1.2\">hello<\/div>","meta_keyword":"TEEEEEEST5","meta_description":"<div data-oe-version=\"1.2\">hello<\/div>","tag":"TEEEEEEST5","ean":" ","price":5,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1121,"product_category":[523],"erp_template_id":1121,"product_image":false,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-31 00:45:14 [API] === PRODUCT API CALLED ===
+2025-12-31 00:45:14 [API] Received data: {"variant_id":"1121","product_id":2971,"sku":"Ref Odoo 1121","name":"TEEEEEEST5","keyword":"TEEEEEEST5","description":"<div data-oe-version=\"1.2\">hello<\/div>","meta_keyword":"TEEEEEEST5","meta_description":"<div data-oe-version=\"1.2\">hello<\/div>","tag":"TEEEEEEST5","ean":" ","price":5,"quantity":0,"weight":0,"length":0,"width":0,"height":0,"status":1,"tax_class_id":0,"stock_status_id":7,"erp_product_id":1121,"product_category":[523],"erp_template_id":1121,"product_image":false,"session":"3vb1wScMnDrGQJheoBd2YH60FPU4Vj9K"}
+2025-12-31 00:45:40 [API] === PRODUCT API CALLED ===
+2025-12-31 00:45:40 [API] Received data: {"test":"connectivity"}

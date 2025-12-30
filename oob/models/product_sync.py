@@ -476,7 +476,15 @@ class ConnectorSnippet(models.TransientModel):
                                                                oc_id['merge_data'][k]),
                                                            name=int(k))
 
-                    obj_pro_mapping.need_sync = 'No'
+                    obj_pro_mapping.need_sync = False
+                    
+                    # Also reset need_sync for template mapping
+                    template_mapping = self.env['connector.template.mapping'].search([
+                        ('odoo_id', '=', obj_pro.id),
+                        ('instance_id', '=', instance_id)
+                    ], limit=1)
+                    if template_mapping:
+                        template_mapping.need_sync = False
             except Exception as e:
                 status = False
                 error = str(e)
