@@ -1,9 +1,20 @@
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
 class Document(models.Model):
     _inherit = "documents.document"
+
+    can_open_in_onlyoffice = fields.Boolean(
+        string="Can Open in ONLYOFFICE",
+        compute="_compute_can_open_in_onlyoffice",
+        help="Whether this document can be opened in ONLYOFFICE editor"
+    )
+
+    @api.depends("type", "attachment_id", "name", "mimetype")
+    def _compute_can_open_in_onlyoffice(self):
+        for record in self:
+            record.can_open_in_onlyoffice = record._can_open_in_onlyoffice()
 
     @api.depends("checksum")
     def _compute_thumbnail(self):
@@ -176,8 +187,11 @@ class Document(models.Model):
     def _can_open_in_onlyoffice(self):
         self.ensure_one()
         
-        if self.type != 'binary' or not self.attachment_id:
+        if self.type != 'binary' or not self.attachment_id or not self.name:
             return False
         
-        from odoo.addons.onlyoffice_odoo.utils import file_utils
-        return file_utils.can_view(self.name)
+        try:
+            from odoo.addons.onlyoffice_odoo.utils import file_utils
+            return file_utils.can_view(self.name)
+        except ImportError:
+            return False

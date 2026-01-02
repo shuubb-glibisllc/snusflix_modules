@@ -12,7 +12,7 @@
                         type="object" 
                         string="Open in ONLYOFFICE" 
                         class="btn-primary"
-                        attrs="{'invisible': ['|', ('type', '!=', 'binary'), ('attachment_id', '=', False)]}"
+                        invisible="not can_open_in_onlyoffice"
                         icon="fa-external-link"/>
             </xpath>
         </field>
@@ -29,7 +29,7 @@
                         type="object" 
                         class="btn btn-primary btn-sm"
                         title="Open in ONLYOFFICE"
-                        t-if="record.type.raw_value == 'binary' and record.attachment_id.raw_value">
+                        t-if="record.can_open_in_onlyoffice.raw_value">
                     <i class="fa fa-external-link"/> Edit
                 </button>
             </xpath>
@@ -55,6 +55,8 @@
         <field name="binding_model_id" ref="documents.model_documents_document"/>
         <field name="state">code</field>
         <field name="code">
+from odoo.exceptions import UserError
+
 if records:
     for record in records:
         if record._can_open_in_onlyoffice():
