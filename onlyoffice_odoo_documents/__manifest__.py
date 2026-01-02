@@ -12,6 +12,7 @@
     "data": [
         "security/ir.model.access.csv",
         "views/onlyoffice_templates_share.xml",
+        "views/documents_views.xml",
     ],
     "license": "LGPL-3",
     "support": "support@onlyoffice.com",

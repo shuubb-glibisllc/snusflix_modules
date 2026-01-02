@@ -1,4 +1,5 @@
 from odoo import _, api, models
+from odoo.exceptions import UserError
 
 
 class Document(models.Model):
@@ -159,3 +160,24 @@ class Document(models.Model):
         self.env["onlyoffice.odoo.documents"].advanced_share_save(vals)
 
         return result
+
+    def action_open_onlyoffice(self):
+        self.ensure_one()
+        
+        if not self._can_open_in_onlyoffice():
+            raise UserError(_("This file type is not supported by ONLYOFFICE or the file is not available."))
+        
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/onlyoffice/editor/document/{self.id}',
+            'target': 'new',
+        }
+
+    def _can_open_in_onlyoffice(self):
+        self.ensure_one()
+        
+        if self.type != 'binary' or not self.attachment_id:
+            return False
+        
+        from odoo.addons.onlyoffice_odoo.utils import file_utils
+        return file_utils.can_view(self.name)

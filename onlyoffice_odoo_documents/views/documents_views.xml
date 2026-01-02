@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Add ONLYOFFICE action to documents form view -->
+    <record id="documents_document_form_view_inherit" model="ir.ui.view">
+        <field name="name">documents.document.form.onlyoffice</field>
+        <field name="model">documents.document</field>
+        <field name="inherit_id" ref="documents.document_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_open_onlyoffice" 
+                        type="object" 
+                        string="Open in ONLYOFFICE" 
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('type', '!=', 'binary'), ('attachment_id', '=', False)]}"
+                        icon="fa-external-link"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add ONLYOFFICE action to documents kanban view -->
+    <record id="documents_document_kanban_view_inherit" model="ir.ui.view">
+        <field name="name">documents.document.kanban.onlyoffice</field>
+        <field name="model">documents.document</field>
+        <field name="inherit_id" ref="documents.documents_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('o_kanban_manage_button_section')]" position="inside">
+                <button name="action_open_onlyoffice" 
+                        type="object" 
+                        class="btn btn-primary btn-sm"
+                        title="Open in ONLYOFFICE"
+                        t-if="record.type.raw_value == 'binary' and record.attachment_id.raw_value">
+                    <i class="fa fa-external-link"/> Edit
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add ONLYOFFICE action to documents list view -->
+    <record id="documents_document_tree_view_inherit" model="ir.ui.view">
+        <field name="name">documents.document.tree.onlyoffice</field>
+        <field name="model">documents.document</field>
+        <field name="inherit_id" ref="documents.document_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="js_class">documents_list</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Server Action for bulk editing in ONLYOFFICE -->
+    <record id="action_open_onlyoffice_server" model="ir.actions.server">
+        <field name="name">Open in ONLYOFFICE</field>
+        <field name="model_id" ref="documents.model_documents_document"/>
+        <field name="binding_model_id" ref="documents.model_documents_document"/>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    for record in records:
+        if record._can_open_in_onlyoffice():
+            action = record.action_open_onlyoffice()
+            break
+    else:
+        raise UserError("No supported documents found for ONLYOFFICE editing.")
+        </field>
+    </record>
+
+</odoo>
