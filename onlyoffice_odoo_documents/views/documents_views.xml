@@ -13,11 +13,10 @@
 if records:
     for record in records:
         if record._can_open_in_onlyoffice():
-            result = record.action_open_onlyoffice()
+            action = record.action_open_onlyoffice()
             break
     else:
-        from odoo.exceptions import UserError
-        raise UserError("No supported documents found for ONLYOFFICE editing.")
+        raise Warning("No supported documents found for ONLYOFFICE editing.")
         </field>
     </record>
 
