@@ -89,22 +89,45 @@ class ConnectorInstance(models.Model):
                         text = f"Login failed. Response: {body}"
 
                 elif isinstance(body, list) and len(body) >= 2:
-                    # Legacy/alternate response format: [token, status]
+                    # OOB plugin format: [message, data_dict, success_bool]
+                    # Extract token from data_dict['session_key']
                     _logger.info("OpenCart TEST CONNECTION - List response, length: %s", len(body))
-                    token = str(body[0])
-                    status_text = body[1]
-                    _logger.info("OpenCart TEST CONNECTION - Token from list: %s, Status: %s", token[:50] if len(token) > 50 else token, status_text)
-                    if status_text:
-                        self.write({
-                            "session_key": token,
-                            "connection_status": True,
-                            "status": status_text
-                        })
-                        text = "Connection successful (legacy format)."
-                        status = "OpenCart Connection Successful"
+
+                    # Check if this is the 3-element format with dict in position 1
+                    if len(body) >= 3 and isinstance(body[1], dict) and 'session_key' in body[1]:
+                        token = body[1]['session_key']
+                        success = body[2]
+                        message = str(body[0])
+                        _logger.info("OpenCart TEST CONNECTION - 3-element format: token=%s, success=%s, message=%s",
+                                   token[:20] + '...' if len(token) > 20 else token, success, message)
+                        if success:
+                            self.write({
+                                "session_key": token,
+                                "connection_status": True,
+                                "status": message
+                            })
+                            text = f"Connection successful. {message}"
+                            status = "OpenCart Connection Successful"
+                        else:
+                            _logger.warning("OpenCart TEST CONNECTION - Success flag is False")
+                            text = f"Login failed: {message}"
                     else:
-                        _logger.warning("OpenCart TEST CONNECTION - List response but status_text is falsy")
-                        text = f"Login failed. Response: {body}"
+                        # Legacy 2-element format: [token, status_text]
+                        token = str(body[0])
+                        status_text = body[1]
+                        _logger.info("OpenCart TEST CONNECTION - 2-element format: token=%s, status=%s",
+                                   token[:50] if len(token) > 50 else token, status_text)
+                        if status_text:
+                            self.write({
+                                "session_key": token,
+                                "connection_status": True,
+                                "status": status_text
+                            })
+                            text = "Connection successful (legacy format)."
+                            status = "OpenCart Connection Successful"
+                        else:
+                            _logger.warning("OpenCart TEST CONNECTION - List response but status_text is falsy")
+                            text = f"Login failed. Response: {body}"
                 else:
                     _logger.error("OpenCart TEST CONNECTION - Unexpected response format: %s", body)
                     text = f"Unexpected response format: {body}"
