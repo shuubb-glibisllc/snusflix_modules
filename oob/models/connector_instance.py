@@ -62,16 +62,21 @@ class ConnectorInstance(models.Model):
 
         try:
             resp = requests.post(url, json=data, headers=headers, timeout=15)
-            _logger.debug("OpenCart login URL: %s", url)
-            _logger.debug("OpenCart login response: %s", resp.text)
+            _logger.info("OpenCart TEST CONNECTION - URL: %s", url)
+            _logger.info("OpenCart TEST CONNECTION - Response status: %s", resp.status_code)
+            _logger.info("OpenCart TEST CONNECTION - Response text: %s", resp.text)
 
             if resp.status_code in [200, 201]:
                 body = resp.json()
+                _logger.info("OpenCart TEST CONNECTION - Parsed JSON: %s", body)
+                _logger.info("OpenCart TEST CONNECTION - Response type: %s", type(body).__name__)
 
                 if isinstance(body, dict):
                     # Standard OpenCart response
+                    _logger.info("OpenCart TEST CONNECTION - Dict response, keys: %s", list(body.keys()))
                     if body.get("success") and body.get("api_token"):
                         token = body["api_token"]
+                        _logger.info("OpenCart TEST CONNECTION - Token extracted: %s", token[:20] + '...' if len(token) > 20 else token)
                         self.write({
                             "session_key": token,
                             "connection_status": True,
@@ -80,12 +85,15 @@ class ConnectorInstance(models.Model):
                         text = "Connection successful. API token stored."
                         status = "OpenCart Connection Successful"
                     else:
+                        _logger.warning("OpenCart TEST CONNECTION - Dict missing success or api_token")
                         text = f"Login failed. Response: {body}"
 
                 elif isinstance(body, list) and len(body) >= 2:
                     # Legacy/alternate response format: [token, status]
+                    _logger.info("OpenCart TEST CONNECTION - List response, length: %s", len(body))
                     token = str(body[0])
                     status_text = body[1]
+                    _logger.info("OpenCart TEST CONNECTION - Token from list: %s, Status: %s", token[:50] if len(token) > 50 else token, status_text)
                     if status_text:
                         self.write({
                             "session_key": token,
@@ -95,8 +103,10 @@ class ConnectorInstance(models.Model):
                         text = "Connection successful (legacy format)."
                         status = "OpenCart Connection Successful"
                     else:
+                        _logger.warning("OpenCart TEST CONNECTION - List response but status_text is falsy")
                         text = f"Login failed. Response: {body}"
                 else:
+                    _logger.error("OpenCart TEST CONNECTION - Unexpected response format: %s", body)
                     text = f"Unexpected response format: {body}"
             else:
                 text = f"HTTP error {resp.status_code}: {resp.text}"
