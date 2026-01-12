@@ -457,6 +457,9 @@ class ConnectorSnippet(models.TransientModel):
                     key = str(resp[0])
                     oc_id = resp[1]
                     status = resp[2]
+                    if not status:
+                        error = key
+                        _logger.error("OpenCart API error updating product: %s", error)
                 elif len(resp) >= 2:
                     error_msg = str(resp[0])
                     status = resp[1]
