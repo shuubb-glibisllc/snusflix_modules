@@ -124,6 +124,8 @@ class ConnectorInstance(models.Model):
             # So sync methods can append specific routes (category, product, etc.)
             url = instance.user + 'index.php?route=api/oob/'
             session_key = instance.session_key
+            _logger.info("OpenCart connection: instance_id=%s, session_key=%s, url=%s",
+                        instance_id, session_key[:20] + '...' if session_key else 'None', url)
             product_configurable = instance.product_configurable
             opencart = OpencartWebServiceDict()
             _logger.debug("OpenCart API client instantiated for instance %s", instance_id)
