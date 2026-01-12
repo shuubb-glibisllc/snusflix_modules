@@ -448,7 +448,9 @@ class ConnectorSnippet(models.TransientModel):
                 product_data['session'] = session_key
                 param = json.dumps(product_data)
                 resp = opencart.get_session_key(url+route, param)
+                _logger.info("OpenCart UPDATE API raw response: %s", resp.text)
                 resp = resp.json()
+                _logger.info("OpenCart UPDATE API parsed response: %s", resp)
 
                 # Handle variable-length responses
                 # Success: [message, product_data, true] - 3 elements
